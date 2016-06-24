@@ -1,7 +1,12 @@
 import json
+from copy import deepcopy
 
 class InputHandler:
     json = None
+
+    #Dicationaries
+    documents_dict = {}
+    document_fields_dict = {}
 
     # InputHandler Constructor
     def __init__(self, file_path):
@@ -11,23 +16,10 @@ class InputHandler:
             j = json.loads(content)
             self.json = j
 
-    # Returns entire json list
-    def getJSON(self, file_path):
-        return self.json
+        # Set dictionaries with id as key, for faster lookup
+        self.documents_dict = self.__generate_dict(self.getDocuments())
+        self.document_fields_dict = self.__generate_dict(self.getDocumentFields())
 
-    def getTopics(self):
-        if (self.json):
-            return self.json['topicss']
-
-    def getTopicById(self, id):
-        return self.__getElementById('topics', id)
-
-    def getDocuments(self):
-        if (self.json):
-            return self.json['documents']
-
-    def getDocumentById(self, id):
-        return self.__getElementById('documents', id)
 
     def getActions(self):
         return self.json['actions']
@@ -36,10 +28,10 @@ class InputHandler:
         return self.__getElementById('actions', id)
 
     def getDocumentFields(self):
-        return self.json['documentFields']
+        return deepcopy(self.json['documentFields'])
 
     def getADocumentFieldById(self, id):
-        return self.__getElementById('documentFields', id)
+        return deepcopy(self.document_fields_dict[id])
 
     def getDocumentTypes(self):
         return self.json['documentTypes']
@@ -71,7 +63,37 @@ class InputHandler:
     def getStatusById(self, id):
         return self.__getElementById('status', id)
 
-    # Returns element, if found, or None
+    # Returns entire json list
+    def getJSON(self, file_path):
+        return self.json
+
+    def getTopics(self):
+        if (self.json):
+            return self.json['topicss']
+
+    def getTopicById(self, id):
+        return self.__getElementById('topics', id)
+
+    def getDocuments(self):
+        if (self.json):
+            return deepcopy(self.json['documents'])
+
+    def getDocumentById(self, id):
+        return self.documents_dict[id]
+
+    # Returns a list document fields with the data needed to generate Word file
+    def get_field_list_by_document_id(self, document_id):
+        field_list = []
+        for document_field in self.getDocumentById(document_id)['fields']:
+            field_id = document_field['fieldId']
+            field =  {
+                'name' : self.getADocumentFieldById(field_id)['name'],
+                'value': document_field['value']
+            }
+            field_list.append(field)
+        return field_list
+
+    # Returns element, if found, else None
     def __getElementById(self, elements, id):
         if not isinstance(id, basestring):  # TODO: Throw exception instead?
             id = '' + id
@@ -79,3 +101,12 @@ class InputHandler:
             if element['id'] == id:
                 return element
         return None
+
+    # Returns a dictionary from json_list, with id as key
+    # @param json_element_list: list of elements form the JSON file, such as self.json['documents']
+    # @returns {dictionary}: dictionary with element id as key
+    def __generate_dict(self, json_element_list):
+        dict = {}
+        for element in json_element_list:
+            dict[element['id']] = element
+        return dict
