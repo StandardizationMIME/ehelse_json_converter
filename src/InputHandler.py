@@ -69,7 +69,7 @@ class InputHandler:
 
     def getTopics(self):
         if (self.json):
-            return self.json['topicss']
+            return self.json['topics']
 
     def getTopicById(self, id):
         return self.__getElementById('topics', id)
