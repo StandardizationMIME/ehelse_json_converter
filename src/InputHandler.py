@@ -7,6 +7,7 @@ class InputHandler:
     #Dicationaries
     documents_dict = {}
     document_fields_dict = {}
+    status_dict = {}
 
     # InputHandler Constructor
     def __init__(self, file_path):
@@ -19,6 +20,7 @@ class InputHandler:
         # Set dictionaries with id as key, for faster lookup
         self.documents_dict = self.__generate_dict(self.getDocuments())
         self.document_fields_dict = self.__generate_dict(self.getDocumentFields())
+        self.status_dict = self.__generate_dict(self.getStatuses())
 
 
     def getActions(self):
@@ -45,6 +47,29 @@ class InputHandler:
     def getLinkCategoryById(self, id):
         return self.__getElementById('linkCategories', id)
 
+    # Returns link category dictionary with the link categories on the specified document
+    # TODO: should be array instead?
+    def get_link_category_dict_by_document_id(self, id):
+        document = self.getDocumentById(id)
+        link_categories_dict = {}
+
+        for link in document['links']:
+            link_category_id = link['linkCategoryId']
+            if link_category_id not in link_categories_dict:
+                link_categories_dict[link_category_id] = self.getLinkCategoryById(link_category_id)
+
+        return link_categories_dict
+
+    def get_links_by_link_category_id_and_document_id(self, link_category_id, document_id):
+        document = self.getDocumentById(document_id)
+        links = []
+
+        for link in document['links']:
+            if link['linkCategoryId'] == link_category_id:
+                links.append(link)
+
+        return links
+
     def getMandatory(self):
         return self.json['mandatory']
 
@@ -61,7 +86,7 @@ class InputHandler:
         return self.json['status']
 
     def getStatusById(self, id):
-        return self.__getElementById('status', id)
+        return self.status_dict[id];
 
     # Returns entire json list
     def getJSON(self, file_path):
@@ -96,7 +121,8 @@ class InputHandler:
     # Returns element, if found, else None
     def __getElementById(self, elements, id):
         if not isinstance(id, basestring):  # TODO: Throw exception instead?
-            id = '' + id
+            print 'something went wrong'
+            id = str(id)
         for element in self.json[elements]:
             if element['id'] == id:
                 return element
