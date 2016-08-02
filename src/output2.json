@@ -1,0 +1,567 @@
+{
+	"actions": [
+		{
+			"name": "Sende",
+			"id": "1",
+			"isArchived": 0
+		},
+		{
+			"name": "Motta",
+			"id": "2",
+			"isArchived": 0
+		}
+	],
+	"documentFields": [
+		{
+			"id": "1",
+			"name": "Felt 1",
+			"sequence": 1,
+			"mandatory": "0",
+			"documentTypeId": 1,
+			"isArchived": 0,
+			"isRichText": 0
+		},
+		{
+			"id": "2",
+			"name": "Felt 2",
+			"sequence": 1,
+			"mandatory": "0",
+			"documentTypeId": 1,
+			"isArchived": 0,
+			"isRichText": 0
+		},
+		{
+			"id": "3",
+			"name": "Varighet",
+			"description": "Hvor lenge standarden gjelder",
+			"sequence": 1,
+			"mandatory": "0",
+			"documentTypeId": 1,
+			"isArchived": 0,
+			"isRichText": 0
+		},
+		{
+			"id": "4",
+			"name": "Utgiver",
+			"sequence": 1,
+			"mandatory": "1",
+			"documentTypeId": 1,
+			"isArchived": 0,
+			"isRichText": 0
+		}
+	],
+	"documentTypes": [
+		{
+			"id": "1",
+			"name": "Standard"
+		},
+		{
+			"id": "2",
+			"name": "Profil"
+		},
+		{
+			"id": "3",
+			"name": "Støttedokument"
+		}
+	],
+	"linkCategories": [
+		{
+			"name": "Linker",
+			"id": "1",
+			"isArchived": 0
+		},
+		{
+			"name": "Bibliografi",
+			"id": "2",
+			"isArchived": 0
+		}
+	],
+	"mandatory": [
+		{
+			"name": "Obligatorisk",
+			"id": "1",
+			"isArchived": 0
+		},
+		{
+			"name": "Valgfritt",
+			"id": "2",
+			"isArchived": 0
+		},
+		{
+			"name": "Anbefalt",
+			"id": "3",
+			"isArchived": 0
+		}
+	],
+	"targetGroups": [
+		{
+			"id": "1",
+			"name": "Målgruppe 1",
+			"description": "",
+			"parentId": null,
+			"abbreviation": "",
+			"isArchived": 0
+		},
+		{
+			"id": "2",
+			"name": "Målgruppe 2",
+			"description": "",
+			"parentId": null,
+			"abbreviation": "",
+			"isArchived": 0
+		},
+		{
+			"id": "3",
+			"name": "Målgruppe 3",
+			"description": "",
+			"parentId": null,
+			"abbreviation": "",
+			"isArchived": 0
+		}
+	],
+	"status": [
+		{
+			"name": "Aktiv",
+			"id": "1",
+			"isArchived": 0
+		},
+		{
+			"name": "Utgått",
+			"id": "1",
+			"isArchived": 0
+		},
+		{
+			"name": "Under innfasing",
+			"id": "1",
+			"isArchived": 0
+		},
+		{
+			"name": "Under utfasing",
+			"id": "1",
+			"isArchived": 0
+		}
+	],
+	"topics": [
+		{
+			"id": "1",
+			"title": "Tema1",
+			"description": "",
+			"sequence": 1,
+			"parentId": null
+		},
+		{
+			"id": "2",
+			"title": "Tema2",
+			"description": "",
+			"sequence": 1,
+			"parentId": null
+		}
+	],
+	"documents": [
+		{
+			"id": "1",
+			"topicId": "2",
+			"title": "Dokument 1",
+			"documentTypeId": "1",
+			"statusId": 1,
+			"internalId": "123",
+			"hisNumber": null,
+			"nextDocumentId": null,
+			"previousDocumentId": null,
+			"description": "",
+			"sequence": 1,
+			"targetGroups": [
+				{
+					"targetGroupId": "1",
+					"description": "Helloo",
+					"actionId": "1",
+					"deadline": "",
+					"mandatoryId": "1"
+				}
+			],
+			"fields": [
+				{
+					"fieldId": "1",
+					"value": "Dette er felt 1"
+				},
+				{
+					"fieldId": "2",
+					"value": "Dette er felt 2"
+				}
+			],
+			"links": [
+				{
+					"linkCategoryId": "1",
+					"text": "Navnverdi",
+					"url": "Link-URL"
+				},
+				{
+					"linkCategoryId": "1",
+					"text": "ASD",
+					"url": "asdasdasd"
+				}
+			],
+			"standardId": null,
+			"editedTimestamp": "2016-08-01 11:14:22",
+			"createdTimestamp": "2016-08-01 10:44:00"
+		},
+		{
+			"id": "2",
+			"topicId": "1",
+			"title": "Dokument1",
+			"documentTypeId": "1",
+			"statusId": "1",
+			"internalId": "001",
+			"hisNumber": null,
+			"nextDocumentId": null,
+			"previousDocumentId": null,
+			"description": "Dette er en standard.",
+			"sequence": 1,
+			"targetGroups": [
+				{
+					"targetGroupId": "1",
+					"description": "Obligatorisk for Målgruppe 1",
+					"actionId": "1",
+					"deadline": "",
+					"mandatoryId": "1"
+				},
+				{
+					"targetGroupId": "2",
+					"description": "Må motta",
+					"actionId": "2",
+					"deadline": "",
+					"mandatoryId": "1"
+				}
+			],
+			"fields": [
+				{
+					"fieldId": "3",
+					"value": "12/2017"
+				},
+				{
+					"fieldId": "4",
+					"value": "Staten"
+				}
+			],
+			"links": [
+				{
+					"linkCategoryId": "1",
+					"text": "Google",
+					"url": "Google.com"
+				},
+				{
+					"linkCategoryId": "2",
+					"text": "B1",
+					"url": "google.com"
+				},
+				{
+					"linkCategoryId": "2",
+					"text": "B2",
+					"url": "google.com"
+				}
+			],
+			"standardId": null,
+			"editedTimestamp": "2016-08-01 14:23:40",
+			"createdTimestamp": "2016-08-01 14:14:52"
+		},
+		{
+			"id": "3",
+			"topicId": "1",
+			"title": "Dokument2",
+			"documentTypeId": "1",
+			"statusId": "1",
+			"internalId": "002",
+			"hisNumber": "20981",
+			"nextDocumentId": null,
+			"previousDocumentId": null,
+			"description": "Denne standarden er under innfasing.",
+			"sequence": 1,
+			"targetGroups": [
+				{
+					"targetGroupId": "3",
+					"description": "",
+					"actionId": "1",
+					"deadline": "07/2017",
+					"mandatoryId": "2"
+				}
+			],
+			"fields": [
+				{
+					"fieldId": "4",
+					"value": "Helsedirektoratet"
+				},
+				{
+					"fieldId": "1",
+					"value": "Ja"
+				},
+				{
+					"fieldId": "3",
+					"value": "05/2020"
+				}
+			],
+			"links": [
+				{
+					"linkCategoryId": "1",
+					"text": "Mer info",
+					"url": "google.com"
+				},
+				{
+					"linkCategoryId": "1",
+					"text": "Google",
+					"url": "google.com"
+				}
+			],
+			"standardId": null,
+			"editedTimestamp": "2016-08-01 14:26:06",
+			"createdTimestamp": "2016-08-01 14:26:06"
+		}
+	],
+	"archivedDocuments": {
+		"1": [
+			{
+				"id": "1",
+				"topicId": "2",
+				"title": "Dokument 1",
+				"documentTypeId": "1",
+				"statusId": 1,
+				"internalId": "123",
+				"hisNumber": null,
+				"nextDocumentId": null,
+				"previousDocumentId": null,
+				"description": "",
+				"sequence": 1,
+				"targetGroups": [
+					{
+						"targetGroupId": "1",
+						"description": "Helloo",
+						"actionId": "1",
+						"deadline": "",
+						"mandatoryId": "1"
+					}
+				],
+				"fields": [],
+				"links": [],
+				"standardId": null,
+				"editedTimestamp": "2016-08-01 10:44:00",
+				"createdTimestamp": "2016-08-01 10:44:00"
+			},
+			{
+				"id": "1",
+				"topicId": "2",
+				"title": "Dokument 1",
+				"documentTypeId": "1",
+				"statusId": 1,
+				"internalId": "123",
+				"hisNumber": null,
+				"nextDocumentId": null,
+				"previousDocumentId": null,
+				"description": "",
+				"sequence": 1,
+				"targetGroups": [
+					{
+						"targetGroupId": "1",
+						"description": "Helloo",
+						"actionId": "1",
+						"deadline": "",
+						"mandatoryId": "1"
+					}
+				],
+				"fields": [
+					{
+						"fieldId": "1",
+						"value": "Dette er felt 1"
+					},
+					{
+						"fieldId": "2",
+						"value": "Dette er felt 2"
+					}
+				],
+				"links": [],
+				"standardId": null,
+				"editedTimestamp": "2016-08-01 11:04:50",
+				"createdTimestamp": "2016-08-01 10:44:00"
+			},
+			{
+				"id": "1",
+				"topicId": "2",
+				"title": "Dokument 1",
+				"documentTypeId": "1",
+				"statusId": 1,
+				"internalId": "123",
+				"hisNumber": null,
+				"nextDocumentId": null,
+				"previousDocumentId": null,
+				"description": "",
+				"sequence": 1,
+				"targetGroups": [
+					{
+						"targetGroupId": "1",
+						"description": "Helloo",
+						"actionId": "1",
+						"deadline": "",
+						"mandatoryId": "1"
+					}
+				],
+				"fields": [
+					{
+						"fieldId": "1",
+						"value": "Dette er felt 1"
+					},
+					{
+						"fieldId": "2",
+						"value": "Dette er felt 2"
+					}
+				],
+				"links": [
+					{
+						"linkCategoryId": "1",
+						"text": "Navnverdi",
+						"url": "Link-URL"
+					}
+				],
+				"standardId": null,
+				"editedTimestamp": "2016-08-01 11:13:14",
+				"createdTimestamp": "2016-08-01 10:44:00"
+			}
+		],
+		"2": [
+			{
+				"id": "2",
+				"topicId": "1",
+				"title": "Soething",
+				"documentTypeId": "1",
+				"statusId": 1,
+				"internalId": "001",
+				"hisNumber": null,
+				"nextDocumentId": null,
+				"previousDocumentId": null,
+				"description": "",
+				"sequence": 1,
+				"targetGroups": [],
+				"fields": [],
+				"links": [],
+				"standardId": null,
+				"editedTimestamp": "2016-08-01 14:14:52",
+				"createdTimestamp": "2016-08-01 14:14:52"
+			},
+			{
+				"id": "2",
+				"topicId": "1",
+				"title": "Soething",
+				"documentTypeId": "1",
+				"statusId": "1",
+				"internalId": "001",
+				"hisNumber": null,
+				"nextDocumentId": null,
+				"previousDocumentId": null,
+				"description": "Dette er en standard.",
+				"sequence": 1,
+				"targetGroups": [
+					{
+						"targetGroupId": "1",
+						"description": "Obligatorisk for Målgruppe 1",
+						"actionId": "1",
+						"deadline": "",
+						"mandatoryId": "1"
+					},
+					{
+						"targetGroupId": "2",
+						"description": "Må motta",
+						"actionId": "2",
+						"deadline": "",
+						"mandatoryId": "1"
+					}
+				],
+				"fields": [
+					{
+						"fieldId": "3",
+						"value": "12/2017"
+					},
+					{
+						"fieldId": "4",
+						"value": "Staten"
+					}
+				],
+				"links": [
+					{
+						"linkCategoryId": "1",
+						"text": "Google",
+						"url": "Google.com"
+					},
+					{
+						"linkCategoryId": "2",
+						"text": "B1",
+						"url": "google.com"
+					},
+					{
+						"linkCategoryId": "2",
+						"text": "B2",
+						"url": "google.com"
+					}
+				],
+				"standardId": null,
+				"editedTimestamp": "2016-08-01 14:23:21",
+				"createdTimestamp": "2016-08-01 14:14:52"
+			},
+			{
+				"id": "2",
+				"topicId": "1",
+				"title": "Document1",
+				"documentTypeId": "1",
+				"statusId": "1",
+				"internalId": "001",
+				"hisNumber": null,
+				"nextDocumentId": null,
+				"previousDocumentId": null,
+				"description": "Dette er en standard.",
+				"sequence": 1,
+				"targetGroups": [
+					{
+						"targetGroupId": "1",
+						"description": "Obligatorisk for Målgruppe 1",
+						"actionId": "1",
+						"deadline": "",
+						"mandatoryId": "1"
+					},
+					{
+						"targetGroupId": "2",
+						"description": "Må motta",
+						"actionId": "2",
+						"deadline": "",
+						"mandatoryId": "1"
+					}
+				],
+				"fields": [
+					{
+						"fieldId": "3",
+						"value": "12/2017"
+					},
+					{
+						"fieldId": "4",
+						"value": "Staten"
+					}
+				],
+				"links": [
+					{
+						"linkCategoryId": "1",
+						"text": "Google",
+						"url": "Google.com"
+					},
+					{
+						"linkCategoryId": "2",
+						"text": "B1",
+						"url": "google.com"
+					},
+					{
+						"linkCategoryId": "2",
+						"text": "B2",
+						"url": "google.com"
+					}
+				],
+				"standardId": null,
+				"editedTimestamp": "2016-08-01 14:23:33",
+				"createdTimestamp": "2016-08-01 14:14:52"
+			}
+		]
+	}
+}
