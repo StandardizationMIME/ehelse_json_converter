@@ -4,6 +4,7 @@ from docx.oxml.shared import *
 
 
 class WordHandler:
+    HEADING_1 = 1
     HEADING_2 = 2
     HEADING_3 = 3
     HEADING_4 = 4
@@ -12,6 +13,9 @@ class WordHandler:
 
     def __init__(self):
         self.word_document = Document()
+
+    def add_heading(self, heading):
+        self.word_document.add_heading(heading, level=self.HEADING_1)
 
     def add_topic(self, topic):
         self.word_document.add_heading(topic['title'], level=self.HEADING_2)
@@ -80,7 +84,7 @@ class WordHandler:
             self.word_document.add_heading(link_category['name'], level=self.HEADING_4)
             for link in inputHandler.get_links_by_link_category_id_and_document_id(link_category_id, document_id): # for each link in current category
                 link_paragraph = self.word_document.add_paragraph(style='ListBullet') #TODO: deprecated, check if therese is a new way
-                self.add_hyperlink(link_paragraph, link['url'], link['text'])   #TODO: Make sure url starts with http/https else, looking for file
+                self.__add_hyperlink(link_paragraph, link['url'], link['text'])   #TODO: Make sure url starts with http/https else, looking for file
 
 
 
@@ -90,7 +94,7 @@ class WordHandler:
         #print "not saved!"
 
     # Credit: https://github.com/rushton3179
-    def add_hyperlink(self, paragraph, url, text):
+    def __add_hyperlink(self, paragraph, url, text):
         """
         A function that places a hyperlink within a paragraph object.
 
