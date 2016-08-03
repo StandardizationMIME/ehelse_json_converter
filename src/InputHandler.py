@@ -76,11 +76,54 @@ class InputHandler:
     def getMandatoryById(self, id):
         return self.__getElementById('mandatory', id)
 
+    def get_mandatory_dict_on_document_id(self, document_id):
+        document = self.getDocumentById(document_id)
+        mandatory_dict = {}
+
+        for target_group in document['targetGroups']:
+            mandatory_id = target_group['mandatoryId']
+            if mandatory_id not in mandatory_dict:
+                mandatory_dict[mandatory_id] = self.getMandatoryById(mandatory_id)
+
+        return mandatory_dict
+
+    def get_target_groups_by_mandatory_id_and_document_id(self, mandatory_id, document_id):
+        document = self.getDocumentById(document_id)
+        target_groups = []
+
+        for target_group in document['targetGroups']:
+            if target_group['mandatoryId'] == mandatory_id:
+                target_groups.append(target_group)
+
+        return target_groups
+
     def getTargetGroups(self):
         return self.json['targetGroups']
 
     def getTargetGroupById(self, id):
         return self.__getElementById('targetGroups', id)
+
+    def get_target_groups_by_document_id(self, id):
+
+        document = self.getDocumentById(id)
+        target_groups_dict = {}
+
+        for target_group in document['targetGroup']:
+            target_group_id = target_group['targetGroupId']
+            if target_group_id not in target_groups_dict:
+                target_groups_dict[target_group_id] = self.getTargetGroupById(target_group_id)
+
+        return target_groups_dict
+
+    def get_target_group_values_by_target_group_id_and_document_id(self, target_group_id, document_id):
+        document = self.getDocumentById(document_id)
+        target_groups_values = []
+
+        for target_group in document['targetGroups']:
+            if target_group['targetGroupId'] == target_group_id:
+                target_groups_values.append(target_group)
+
+        return target_groups_values
 
     def getStatuses(self):
         return self.json['status']
