@@ -32,6 +32,15 @@ class InputHandler:
     def getDocumentFields(self):
         return deepcopy(self.json['documentFields'])
 
+    def get_documents_by_topic_id(self, id):
+        documents = []
+
+        for document in self.getDocuments():
+            if id == document['topicId']:
+                documents.append(document)
+
+        return documents
+
     def getADocumentFieldById(self, id):
         return deepcopy(self.document_fields_dict[id])
 
@@ -164,7 +173,6 @@ class InputHandler:
     # Returns element, if found, else None
     def __getElementById(self, elements, id):
         if not isinstance(id, basestring):  # TODO: Throw exception instead?
-            print 'something went wrong'
             id = str(id)
         for element in self.json[elements]:
             if element['id'] == id:
