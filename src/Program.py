@@ -1,4 +1,3 @@
-import Tkinter as tk #Probably don't need this
 from MainController import *
 
 
