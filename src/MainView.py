@@ -21,7 +21,7 @@ class MainView(tk.Toplevel):
         self.upload_button = tk.Button(self, text='last opp JSON-fil')
         self.upload_button.pack()
 
-        self.download_button = tk.Button(self, text='Last ned Word-fil')
+        self.download_button = tk.Button(self, text='Last ned Word-fil', state='disabled')
         self.download_button.pack()
 
         self.error_message = tk.StringVar()
@@ -33,3 +33,10 @@ class MainView(tk.Toplevel):
 
     def set_error_message(self, error_message):
         self.error_message.set(error_message)
+
+    def disable_download_button(self, disabled):
+        if disabled:
+            self.download_button.config(state='disabled')
+        else:
+            self.download_button.config(state='normal')
+
