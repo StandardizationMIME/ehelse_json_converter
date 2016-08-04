@@ -7,6 +7,7 @@ class InputHandler:
     #Dicationaries
     documents_dict = {}
     document_fields_dict = {}
+    status_dict = {}
 
     # InputHandler Constructor
     def __init__(self, file_path):
@@ -19,6 +20,7 @@ class InputHandler:
         # Set dictionaries with id as key, for faster lookup
         self.documents_dict = self.__generate_dict(self.getDocuments())
         self.document_fields_dict = self.__generate_dict(self.getDocumentFields())
+        self.status_dict = self.__generate_dict(self.getStatuses())
 
 
     def getActions(self):
@@ -29,6 +31,15 @@ class InputHandler:
 
     def getDocumentFields(self):
         return deepcopy(self.json['documentFields'])
+
+    def get_documents_by_topic_id(self, id):
+        documents = []
+
+        for document in self.getDocuments():
+            if id == document['topicId']:
+                documents.append(document)
+
+        return documents
 
     def getADocumentFieldById(self, id):
         return deepcopy(self.document_fields_dict[id])
@@ -45,11 +56,55 @@ class InputHandler:
     def getLinkCategoryById(self, id):
         return self.__getElementById('linkCategories', id)
 
+    # Returns link category dictionary with the link categories on the specified document
+    # TODO: should be array instead?
+    def get_link_category_dict_by_document_id(self, id):
+        document = self.getDocumentById(id)
+        link_categories_dict = {}
+
+        for link in document['links']:
+            link_category_id = link['linkCategoryId']
+            if link_category_id not in link_categories_dict:
+                link_categories_dict[link_category_id] = self.getLinkCategoryById(link_category_id)
+
+        return link_categories_dict
+
+    def get_links_by_link_category_id_and_document_id(self, link_category_id, document_id):
+        document = self.getDocumentById(document_id)
+        links = []
+
+        for link in document['links']:
+            if link['linkCategoryId'] == link_category_id:
+                links.append(link)
+
+        return links
+
     def getMandatory(self):
         return self.json['mandatory']
 
     def getMandatoryById(self, id):
         return self.__getElementById('mandatory', id)
+
+    def get_mandatory_dict_on_document_id(self, document_id):
+        document = self.getDocumentById(document_id)
+        mandatory_dict = {}
+
+        for target_group in document['targetGroups']:
+            mandatory_id = target_group['mandatoryId']
+            if mandatory_id not in mandatory_dict:
+                mandatory_dict[mandatory_id] = self.getMandatoryById(mandatory_id)
+
+        return mandatory_dict
+
+    def get_target_groups_by_mandatory_id_and_document_id(self, mandatory_id, document_id):
+        document = self.getDocumentById(document_id)
+        target_groups = []
+
+        for target_group in document['targetGroups']:
+            if target_group['mandatoryId'] == mandatory_id:
+                target_groups.append(target_group)
+
+        return target_groups
 
     def getTargetGroups(self):
         return self.json['targetGroups']
@@ -57,11 +112,33 @@ class InputHandler:
     def getTargetGroupById(self, id):
         return self.__getElementById('targetGroups', id)
 
+    def get_target_groups_by_document_id(self, id):
+
+        document = self.getDocumentById(id)
+        target_groups_dict = {}
+
+        for target_group in document['targetGroup']:
+            target_group_id = target_group['targetGroupId']
+            if target_group_id not in target_groups_dict:
+                target_groups_dict[target_group_id] = self.getTargetGroupById(target_group_id)
+
+        return target_groups_dict
+
+    def get_target_group_values_by_target_group_id_and_document_id(self, target_group_id, document_id):
+        document = self.getDocumentById(document_id)
+        target_groups_values = []
+
+        for target_group in document['targetGroups']:
+            if target_group['targetGroupId'] == target_group_id:
+                target_groups_values.append(target_group)
+
+        return target_groups_values
+
     def getStatuses(self):
         return self.json['status']
 
     def getStatusById(self, id):
-        return self.__getElementById('status', id)
+        return self.status_dict[id];
 
     # Returns entire json list
     def getJSON(self, file_path):
@@ -69,7 +146,7 @@ class InputHandler:
 
     def getTopics(self):
         if (self.json):
-            return self.json['topicss']
+            return self.json['topics']
 
     def getTopicById(self, id):
         return self.__getElementById('topics', id)
@@ -96,7 +173,7 @@ class InputHandler:
     # Returns element, if found, else None
     def __getElementById(self, elements, id):
         if not isinstance(id, basestring):  # TODO: Throw exception instead?
-            id = '' + id
+            id = str(id)
         for element in self.json[elements]:
             if element['id'] == id:
                 return element
