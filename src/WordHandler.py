@@ -73,7 +73,7 @@ class WordHandler:
                     cells[0].text = ''
 
                 cells[1].text = input_handler.getTargetGroupById(target_group['targetGroupId'])['name']  # Name of target group
-                cells[2].text = input_handler.getActionById(target_group['actionId'])['name']            # Name of action
+                cells[2].text = input_handler.get_action_name_by_id(target_group['actionId'])
 
                 row_number += 1
 
@@ -85,6 +85,8 @@ class WordHandler:
             for link in input_handler.get_links_by_link_category_id_and_document_id(link_category_id, document_id): # for each link in current category
                 link_paragraph = self.word_document.add_paragraph(style='ListBullet') #TODO: deprecated, check if therese is a new way
                 self.__add_hyperlink(link_paragraph, link['url'], link['text'])   #TODO: Make sure url starts with http/https else, looking for file
+
+       
 
 
 

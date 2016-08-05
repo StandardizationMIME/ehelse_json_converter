@@ -170,6 +170,15 @@ class InputHandler:
             field_list.append(field)
         return field_list
 
+    def get_action_name_by_id(self, id):
+        action = self.getActionById(id)
+        action_name = ''
+        try:
+            action_name = action['name']
+        except:
+            pass
+        return action_name
+
     # Returns element, if found, else None
     def __getElementById(self, elements, id):
         if not isinstance(id, basestring):  # TODO: Throw exception instead?
