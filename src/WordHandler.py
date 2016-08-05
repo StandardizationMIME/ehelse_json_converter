@@ -77,6 +77,14 @@ class WordHandler:
 
                 row_number += 1
 
+        # Sections (headings)
+        heading_dict = input_handler.get_heading_dict_by_document_id(document_id)
+        for heading_id, heading in heading_dict.iteritems():
+            self.word_document.add_heading(heading['name'], level=self.HEADING_4)
+            self.word_document.add_paragraph(
+                input_handler.get_heading_content_by_heading_id_and_document_id(heading_id, document_id)['text']
+            )
+
         # Links
         link_category_dict = input_handler.get_link_category_dict_by_document_id(document_id)
 

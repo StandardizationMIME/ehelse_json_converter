@@ -1,10 +1,11 @@
 import json
 from copy import deepcopy
 
+
 class InputHandler:
     json = None
 
-    #Dicationaries
+    # Dicationaries
     documents_dict = {}
     document_fields_dict = {}
     status_dict = {}
@@ -22,17 +23,15 @@ class InputHandler:
         self.document_fields_dict = self.__generate_dict(self.getDocumentFields())
         self.status_dict = self.__generate_dict(self.getStatuses())
 
-
     def getActions(self):
         return self.json['actions']
 
     def getActionById(self, id):
         return self.__getElementById('actions', id)
 
-
     def get_contact_address_name_by_document_id(self, id):
         contact_address_id = self.getDocumentById(id)['contactAddressId']
-        contact_address = self.get_contact_address_by_id(contact_address_id)
+        contact_address = self.__get_contact_address_by_id(contact_address_id)
         contact_address_name = ''
         try:
             contact_address_name = contact_address['name']
@@ -63,6 +62,45 @@ class InputHandler:
 
     def getADocumentTypeById(self, id):
         return self.__getElementById('documentTypes', id)
+
+    def get_section_dict_by_document_id(self, document_id):
+        # headingContent
+        document = self.getDocumentById(id)
+        link_categories_dict = {}
+
+        for link in document['links']:
+            link_category_id = link['linkCategoryId']
+            if link_category_id not in link_categories_dict:
+                link_categories_dict[link_category_id] = self.getLinkCategoryById(link_category_id)
+
+        return link_categories_dict
+
+    def get_heading_dict_by_document_id(self, id):
+        return self.get_element_dict_by_document_id('headings', 'headingContent', 'headingId', id)
+
+    def get_heading_content_by_heading_id_and_document_id(self, heading_id, document_id):
+        document = self.getDocumentById(document_id)
+        for heading in document['headingContent']:
+            if heading['headingId'] == heading_id:
+                return heading
+        return None
+
+    def get_element_dict_by_document_id(self, element_name, element_document_name, element_id_name, document_id):
+        '''
+        Returns a dictionary with element_id as key, and element as value.
+        :param element_name: name of the list from JSON file, such as "headings"
+        :param element_document_name: name of the list in document, such as "headingContent"
+        :param element_id_name: name if the ids, such as "headingId"
+        :param document_id:
+        :return:
+        '''
+        document = self.getDocumentById(document_id)
+        dict = {}
+        for element in document[element_document_name]:
+            element_id = element[element_id_name]
+            if element_id not in dict:
+                dict[element_id] = self.__getElementById(element_name, element_id)
+        return dict
 
     def getLinkCategories(self):
         return self.json['linkCategories']
@@ -177,8 +215,8 @@ class InputHandler:
         field_list = []
         for document_field in self.getDocumentById(document_id)['fields']:
             field_id = document_field['fieldId']
-            field =  {
-                'name' : self.getADocumentFieldById(field_id)['name'],
+            field = {
+                'name': self.getADocumentFieldById(field_id)['name'],
                 'value': document_field['value']
             }
             field_list.append(field)
@@ -194,7 +232,7 @@ class InputHandler:
         return action_name
 
     # Returns element, if found, else None
-    def __getElementById(self, elements, id):   # TODO: store all as dictionaries for faster access?
+    def __getElementById(self, elements, id):  # TODO: store all as dictionaries for faster access?
         if not isinstance(id, basestring):  # TODO: Throw exception instead?
             id = str(id)
         for element in self.json[elements]:
