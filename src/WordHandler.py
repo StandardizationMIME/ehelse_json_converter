@@ -86,7 +86,9 @@ class WordHandler:
                 link_paragraph = self.word_document.add_paragraph(style='ListBullet') #TODO: deprecated, check if therese is a new way
                 self.__add_hyperlink(link_paragraph, link['url'], link['text'])   #TODO: Make sure url starts with http/https else, looking for file
 
-       
+        # Contact address
+        self.word_document.add_heading('Kontaktadresse', level=self.HEADING_4)
+        self.word_document.add_paragraph(input_handler.get_contact_address_name_by_document_id(document_id))
 
 
 

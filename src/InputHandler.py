@@ -29,6 +29,20 @@ class InputHandler:
     def getActionById(self, id):
         return self.__getElementById('actions', id)
 
+
+    def get_contact_address_name_by_document_id(self, id):
+        contact_address_id = self.getDocumentById(id)['contactAddressId']
+        contact_address = self.get_contact_address_by_id(contact_address_id)
+        contact_address_name = ''
+        try:
+            contact_address_name = contact_address['name']
+        except:
+            pass
+        return contact_address_name
+
+    def __get_contact_address_by_id(self, id):
+        return self.__getElementById('contactAddresses', id)
+
     def getDocumentFields(self):
         return deepcopy(self.json['documentFields'])
 
@@ -180,7 +194,7 @@ class InputHandler:
         return action_name
 
     # Returns element, if found, else None
-    def __getElementById(self, elements, id):
+    def __getElementById(self, elements, id):   # TODO: store all as dictionaries for faster access?
         if not isinstance(id, basestring):  # TODO: Throw exception instead?
             id = str(id)
         for element in self.json[elements]:
