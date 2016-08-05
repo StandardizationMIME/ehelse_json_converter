@@ -28,8 +28,9 @@ class MainController:
             self.output_path = tkFileDialog.asksaveasfilename(defaultextension=".docx")
             if self.output_path:
                 self.__download_generated_word_document(self.output_path)
+                self.__set_success_message(Messages.SUCCESS_DOWNLOAD)
         else:
-            self.main_view.set_error_message(Messages.ERROR_NO_INPUT_PATH_SELECTED)
+            self.__set_error_message(Messages.ERROR_NO_INPUT_PATH_SELECTED)
 
     def uplpoad(self):
         self.__clear_error_message()
@@ -39,7 +40,7 @@ class MainController:
         if not path:
             pass
         elif self.__get_file_extension(path).lower() != 'json':
-            self.main_view.set_error_message(Messages.ERROR_INVALID_FILE_FORMAT)
+            self.__set_error_message(Messages.ERROR_INVALID_FILE_FORMAT)
         else:   # Valid path
             self.input_path = path
             self.main_view.set_input_path(self.input_path)
@@ -48,13 +49,21 @@ class MainController:
                 self.main_view.disable_download_button(False)
             except ValueError as e:
                 print e
-                self.main_view.set_error_message(Messages.ERROR_INVALID_JSON)
+                self.__set_error_message(Messages.ERROR_INVALID_JSON)
             except Exception as e:
                 print e
-                self.main_view.set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
+                self.__set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
 
     def __clear_error_message(self):
         self.main_view.set_error_message('')
+
+    def __set_error_message(self, error_message):
+        self.main_view.set_success_message('')
+        self.main_view.set_error_message(error_message)
+
+    def __set_success_message(self, success_message):
+        self.main_view.set_error_message('')
+        self.main_view.set_success_message(success_message)
 
 
     def __generate_word_document(self, input_path):
