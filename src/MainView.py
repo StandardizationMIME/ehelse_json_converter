@@ -38,11 +38,18 @@ class MainView(tk.Toplevel):
         self.error_message_label = tk.Label(self.content_frame, textvariable=self.error_message, fg='red')
         self.error_message_label.grid(row=2)
 
+        self.success_message = tk.StringVar()
+        self.success_message_label = tk.Label(self.content_frame, textvariable=self.success_message)
+        self.success_message_label.grid(row=3)
+
     def set_input_path(self, input_path):
         self.input_path.set(input_path)
 
     def set_error_message(self, error_message):
         self.error_message.set(error_message)
+
+    def set_success_message(self, success_message):
+        self.success_message.set(success_message)
 
     def disable_download_button(self, disabled):
         if disabled:
