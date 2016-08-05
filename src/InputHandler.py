@@ -30,6 +30,11 @@ class InputHandler:
         return self.__getElementById('actions', id)
 
     def get_contact_address_name_by_document_id(self, id):
+        '''
+        Returns name of contact address
+        :param id:
+        :return: string - name of contact adress
+        '''
         contact_address_id = self.getDocumentById(id)['contactAddressId']
         contact_address = self.__get_contact_address_by_id(contact_address_id)
         contact_address_name = ''
@@ -210,8 +215,12 @@ class InputHandler:
     def getDocumentById(self, id):
         return self.documents_dict[id]
 
-    # Returns a list document fields with the data needed to generate Word file
     def get_field_list_by_document_id(self, document_id):
+        '''
+        Returns a list document fields with the data needed to generate Word file
+        :param document_id:
+        :return: list of document fields with "name" and "value"
+        '''
         field_list = []
         for document_field in self.getDocumentById(document_id)['fields']:
             field_id = document_field['fieldId']
@@ -231,8 +240,13 @@ class InputHandler:
             pass
         return action_name
 
-    # Returns element, if found, else None
     def __getElementById(self, elements, id):  # TODO: store all as dictionaries for faster access?
+        '''
+        Returns element, if found, else None
+        :param elements:
+        :param id:
+        :return: element | None
+        '''
         if not isinstance(id, basestring):  # TODO: Throw exception instead?
             id = str(id)
         for element in self.json[elements]:
@@ -240,10 +254,12 @@ class InputHandler:
                 return element
         return None
 
-    # Returns a dictionary from json_list, with id as key
-    # @param json_element_list: list of elements form the JSON file, such as self.json['documents']
-    # @returns {dictionary}: dictionary with element id as key
     def __generate_dict(self, json_element_list):
+        '''
+        Returns a dictionary from json_list, with id as key
+        :param json_element_list: json_element_list: list of elements form the JSON file, such as self.json['documents']
+        :return: dictionary with element id as key
+        '''
         dict = {}
         for element in json_element_list:
             dict[element['id']] = element
