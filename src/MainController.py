@@ -35,7 +35,8 @@ class MainController:
     def uplpoad(self):
         self.__clear_error_message()
         self.main_view.disable_download_button(True)
-        path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp JSON-fil')
+        #path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp JSON-fil')
+        path = 'c:/users/ak/desktop/aaaOutput.json'
         self.main_view.set_input_path('')
         if not path:
             pass
@@ -44,9 +45,10 @@ class MainController:
         else:   # Valid path
             self.input_path = path
             self.main_view.set_input_path(self.input_path)
+            self.__generate_word_document(self.input_path)
+            self.main_view.disable_download_button(False)
             try:
-                self.__generate_word_document(self.input_path)
-                self.main_view.disable_download_button(False)
+                pass
             except ValueError as e:
                 print e
                 self.__set_error_message(Messages.ERROR_INVALID_JSON)
