@@ -240,6 +240,18 @@ class InputHandler:
             pass
         return action_name
 
+    def get_hjemmel_by_document_id(self, id):
+        return self.getDocumentById(id)['hjemmel']
+
+    def get_decided_by_by_document_id(self, id):
+        return self.getDocumentById(id)['decidedBy']
+
+    def get_mandatory_notice_by_mandatory_id_and_document_id(self, mandatory_id, document_id):
+        document = self.getDocumentById(document_id)
+        mandatory_notices_dict = self.__generate_dict(document['mandatoryNotices'], 'mandatoryId')
+        return mandatory_notices_dict[mandatory_id]['notice']
+
+
     def __getElementById(self, elements, id):  # TODO: store all as dictionaries for faster access?
         '''
         Returns element, if found, else None
@@ -254,7 +266,7 @@ class InputHandler:
                 return element
         return None
 
-    def __generate_dict(self, json_element_list):
+    def __generate_dict(self, json_element_list, id='id'):
         '''
         Returns a dictionary from json_list, with id as key
         :param json_element_list: json_element_list: list of elements form the JSON file, such as self.json['documents']
@@ -262,5 +274,5 @@ class InputHandler:
         '''
         dict = {}
         for element in json_element_list:
-            dict[element['id']] = element
+            dict[element[id]] = element
         return dict

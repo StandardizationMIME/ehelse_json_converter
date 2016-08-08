@@ -1,13 +1,17 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from docx import *  #TODO: check if we can import less
 from docx.shared import Inches
 from docx.oxml.shared import *
-
+import os
+import sys
 
 class WordHandler:
     HEADING_1 = 1
     HEADING_2 = 2
     HEADING_3 = 3
     HEADING_4 = 4
+    UTF8 = 'utf8'
 
     word_document = None
 
@@ -37,20 +41,20 @@ class WordHandler:
         # -- Status
 
         cells = table.add_row().cells
-        cells[0].text = 'Status:'
+        cells[0].paragraphs[0].add_run('Status:').italic = True
         cells[1].text = input_handler.getStatusById(document['statusId'])['name']
 
         # -- HIS number
         if (document['hisNumber']):
 
             cells = table.add_row().cells
-            cells[0].text = 'HIS-nummer:'
+            cells[0].paragraphs[0].add_run('HIS-nummer:').italic = True
             cells[1].text = document['hisNumber']
 
         # -- Document fields
         for document_field in document_fields:
             cells = table.add_row().cells
-            cells[0].text = document_field['name'] + ':'
+            cells[0].paragraphs[0].add_run(document_field['name'] + ':').italic = True
             cells[1].text = document_field['value']
 
         # Target groups
@@ -64,11 +68,12 @@ class WordHandler:
         mandatory_dict = input_handler.get_mandatory_dict_on_document_id(document_id)
 
         for mandataory_id, mandataory in mandatory_dict.iteritems():
-            row_number = 1;
+            row_number = 1
+
             for target_group in input_handler.get_target_groups_by_mandatory_id_and_document_id(mandataory_id, document_id):
                 cells = target_groups_table.add_row().cells
                 if row_number == 1:     # Add mandatory name on first iteration
-                    cells[0].text = mandataory['name'] + ':'
+                    cells[0].paragraphs[0].add_run(mandataory['name'] + ':').italic = True
                 else:
                     cells[0].text = ''
 
@@ -76,6 +81,27 @@ class WordHandler:
                 cells[2].text = input_handler.get_action_name_by_id(target_group['actionId'])
 
                 row_number += 1
+
+            if input_handler.get_hjemmel_by_document_id(document_id) and mandataory_id == '1':
+                text = '• Hjemmel:'
+                cells = target_groups_table.add_row().cells
+                cells[0].paragraphs[0].add_run(text.decode(self.UTF8)).italic = True
+                cells[1].text = input_handler.get_hjemmel_by_document_id(document_id)
+            elif input_handler.get_decided_by_by_document_id(document_id) and mandataory_id == '1':
+                text = '• Erstattes av:'
+                cells = target_groups_table.add_row().cells
+                cells[0].paragraphs[0].add_run(text.decode(self.UTF8)).italic = True
+                cells[1].text = input_handler.get_decided_by_by_document_id(document_id)
+
+            notice = input_handler.get_mandatory_notice_by_mandatory_id_and_document_id(mandataory_id, document_id)
+            if notice:
+                text = '• Merknad:'
+                cells = target_groups_table.add_row().cells
+                cells[0].paragraphs[0].add_run(text.decode(self.UTF8)).italic = True
+                cells[1].text = notice
+
+
+
 
         # Sections (headings)
         heading_dict = input_handler.get_heading_dict_by_document_id(document_id)
