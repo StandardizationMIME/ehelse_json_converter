@@ -44,9 +44,10 @@ class MainController:
         else:   # Valid path
             self.input_path = path
             self.main_view.set_input_path(self.input_path)
+            self.__generate_word_document(self.input_path)
+            self.main_view.disable_download_button(False)
             try:
-                self.__generate_word_document(self.input_path)
-                self.main_view.disable_download_button(False)
+                pass
             except ValueError as e:
                 print e
                 self.__set_error_message(Messages.ERROR_INVALID_JSON)
