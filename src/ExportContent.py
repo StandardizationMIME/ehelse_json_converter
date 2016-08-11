@@ -35,7 +35,7 @@ class ExportContent:
             document_object['title'] = document['title']
             document_object['description'] = document['description']
             document_object['status'] = input_handler.get_status_name_by_id(document['statusId'])
-
+            document_object['contactAddress'] = input_handler.get_contact_address_name_by_document_id(document_id)
             # Fields
             document_object['fields'] = input_handler.get_field_list_by_document_id(document_id)
 
@@ -75,15 +75,14 @@ class ExportContent:
 
                 })
 
-
-            '''
-            print input_handler.get_target_group_values_by_target_group_id_and_document_id()
-            for mandatory in input_handler.getMandatory():
-                document_object['mandatoryList'].append({
-                    'name': mandatory['name'],
-                    'targetGroups':
+            # Headings
+            document_object['headings'] = []
+            for heading in document['headingContent']:
+                document_object['headings'].append({
+                    'title': input_handler.get_heading_name_by_heading_id(heading['headingId']),
+                    'text': heading['text']
                 })
-            '''
+
             documents_object.append(document_object)
         return documents_object
 
