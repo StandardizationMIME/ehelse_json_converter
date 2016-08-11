@@ -3,6 +3,7 @@
 from docx import *  #TODO: check if we can import less
 from docx.shared import Inches
 from docx.oxml.shared import *
+from docxtpl import DocxTemplate
 import os
 import sys
 
@@ -15,14 +16,21 @@ class WordHandler:
 
     word_document = None
 
-    def __init__(self):
-        self.word_document = Document()
+    word_template = None
+    content = {}
+
+    def __init__(self, template_path):
+        self.word_template = DocxTemplate('word_file.docx')
+
+        #self.word_document = Document()
 
     def add_heading(self, heading):
-        self.word_document.add_heading(heading, level=self.HEADING_1)
+        self.content['title'] = heading
+        #self.word_document.add_heading(heading, level=self.HEADING_1)
 
     def add_topic(self, topic):
-        self.word_document.add_heading(topic['title'], level=self.HEADING_2)
+        self.content['topics']
+        #self.word_document.add_heading(topic['title'], level=self.HEADING_2)
 
     def add_document(self, document, input_handler):
         document_id = document["id"]
@@ -127,8 +135,11 @@ class WordHandler:
 
 
 
-    def save_word_document(self, file_path, file_name):
-        self.word_document.save("%s/%s.docx" % (file_path, file_name))
+    def save_word_document(self, file_path, file_name, content_list):
+        if self.word_template:
+            self.word_template.render(content_list)
+            self.word_template.save('c:/users/AK/Desktop/this2.docx')
+        #self.word_document.save("%s/%s.docx" % (file_path, file_name))
 
     # Credit: https://github.com/rushton3179
     def __add_hyperlink(self, paragraph, url, text):

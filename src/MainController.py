@@ -3,23 +3,26 @@ from MainView import *
 from Messages import *
 from WordHandler import *
 import tkFileDialog
+from ExportContent import *
+from WordTemplateExporter import *
 
 
 class MainController:
 
     def __init__(self, root):
         # View config
-        self.main_view = MainView(root)
+        #self.main_view = MainView(root)
 
-        self.main_view.upload_button.config(command=self.uplpoad)
-        self.main_view.download_button.config(command=self.download)
+        #self.main_view.upload_button.config(command=self.uplpoad)
+        #self.main_view.download_button.config(command=self.download)
 
         # Paths
         self.input_path = ''
         self.output_path = ''
 
         # Word handler
-        self.word_handler = WordHandler()
+        #self.word_handler = WordHandler()
+        self.__generate_word_document('')
 
 
     def download(self):
@@ -33,6 +36,8 @@ class MainController:
             self.__set_error_message(Messages.ERROR_NO_INPUT_PATH_SELECTED)
 
     def uplpoad(self):
+        self.__generate_word_document('')
+        '''
         self.__clear_error_message()
         self.main_view.disable_download_button(True)
         path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp JSON-fil')
@@ -53,6 +58,7 @@ class MainController:
             except Exception as e:
                 print e
                 self.__set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
+        '''
 
     def __clear_error_message(self):
         self.main_view.set_error_message('')
@@ -67,6 +73,24 @@ class MainController:
 
 
     def __generate_word_document(self, input_path):
+        export_content = ExportContent()
+        input_handler = InputHandler('c:/users/AK/Desktop/aaa02.json')
+
+        export_content.set_title('Eksport fra Mime')
+
+
+        topics = input_handler.getTopics()
+        for topic in topics:
+            print 'topic: ' + topic['title']
+            documents = input_handler.get_documents_by_topic_id(topic['id'])
+
+            export_content.add_topic(topic, documents, input_handler)
+
+        word_template_exporter = WordTemplateExporter('test')
+        word_template_exporter.save_file(export_content.get_content(),'')
+
+        '''
+
         input_handler = InputHandler(input_path)
 
         # Heading
@@ -80,6 +104,7 @@ class MainController:
             # Document
             for document in input_handler.get_documents_by_topic_id(topic['id']):
                 self.word_handler.add_document(document, input_handler)
+        '''
 
     def __download_generated_word_document(self, output_path):
         file_path = self.__get_file_path(output_path)

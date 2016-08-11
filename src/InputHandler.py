@@ -210,6 +210,7 @@ class InputHandler:
         return self.json
 
     def getTopics(self):
+        return self.json['topics'] # TODO: Check sort!
         if (self.json):
             return self.get_sorted_topics(self.json['topics'])
 
