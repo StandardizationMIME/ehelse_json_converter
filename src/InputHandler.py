@@ -195,7 +195,15 @@ class InputHandler:
         return self.json['status']
 
     def getStatusById(self, id):
-        return self.status_dict[id];
+        if id in self.status_dict:
+            return self.status_dict[id]
+        return None
+
+    def get_status_name_by_id(self, id):
+        status = self.getStatusById(id)
+        if status:
+            return status['name']
+        return ''
 
     # Returns entire json list
     def getJSON(self, file_path):
