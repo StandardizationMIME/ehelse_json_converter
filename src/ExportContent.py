@@ -52,15 +52,29 @@ class ExportContent:
                         'action': input_handler.get_action_name_by_id(target_group['actionId'])
                     })
 
-                print 'mandatroyId ' + mandataory_id + ' ' + mandataory['name']
+                hjemmel = ''
+                if document['hjemmel'] is not None:
+                    hjemmel = document['hjemmel']
+                decidedBy = ''
+                if document['decidedBy'] is not None:
+                    decidedBy = document['decidedBy']
+                replacedBy = ''
+                if document['replacedBy'] is not None:
+                    replacedBy = document['replacedBy']
+                notice = ''
+                for mandatory_notice in document['mandatoryNotices']:
+                    if mandatory_notice['mandatoryId'] == mandataory_id:
+                        notice = mandatory_notice['notice']
                 document_object['mandatoryList'].append({
                     'name' : mandataory['name'],
                     'targetGroups': target_groups,
-                    'hjemmel': document['hjemmel'] if (mandataory_id == 1 and document['hjemmel'] is not None) else '',
-                    'decidedBy':
-                        document['decidedBy'] if (mandataory_id == 1 and document['decidedBy'] is not None) else ''
+                    'hjemmel': hjemmel,
+                    'decidedBy': decidedBy,
+                    'replacedBy': replacedBy,
+                    'notice': notice
 
                 })
+
 
             '''
             print input_handler.get_target_group_values_by_target_group_id_and_document_id()
