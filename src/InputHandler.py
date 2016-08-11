@@ -195,7 +195,15 @@ class InputHandler:
         return self.json['status']
 
     def getStatusById(self, id):
-        return self.status_dict[id];
+        if id in self.status_dict:
+            return self.status_dict[id]
+        return None
+
+    def get_status_name_by_id(self, id):
+        status = self.getStatusById(id)
+        if status:
+            return status['name']
+        return ''
 
     # Returns entire json list
     def getJSON(self, file_path):
@@ -203,7 +211,52 @@ class InputHandler:
 
     def getTopics(self):
         if (self.json):
-            return self.json['topics']
+            return self.get_sorted_topics(self.json['topics'])
+
+    def get_sorted_topics(self, topics):
+        """
+        Returns a list of sorted topics, e.g. [1, 1.1, 1.1.1, 1.1.2, 1.2, 2, 2.1 , 3, 3.1]
+        :param topics: array of topics
+        :return: array of sorted topics
+        """
+        top_level_topics = []
+        for topic in topics:
+            if not topic['parentId']:
+                top_level_topics.append(topic)
+        top_level_topics = self.__get_list_sorted_by_property(top_level_topics, 'sequence')
+
+        sorted_topics = []
+        for top_level_topic in top_level_topics:
+            children = self.__get_list_of_topic_children(topics, top_level_topic)
+            sorted_topics.extend(children)
+
+        for t in sorted_topics:
+            print t['title']
+
+        return sorted_topics
+
+
+    def __get_list_of_topic_children(self, topics, topic):
+        sorted_topics = []
+        children = self.__get_topic_children(topics, topic['id'])
+        children = self.__get_list_sorted_by_property(children, 'sequence')
+        sorted_topics.append(topic)
+        for c in children:
+            sorted_topics.extend(self.__get_list_of_topic_children(topics, c))
+        return sorted_topics
+
+    def __get_topic_children(self, topics, id):
+        children = []
+        for topic in topics:
+            if topic['parentId'] == id:
+                children.append(topic)
+        return self.__get_list_sorted_by_property(children, 'sequence')
+
+    def __get_list_sorted_by_id(self, list):
+        return sorted(list, key=lambda element: element['id'])
+
+    def __get_list_sorted_by_property(self, list, property):
+        return sorted(list, key=lambda element: element[property])
 
     def getTopicById(self, id):
         return self.__getElementById('topics', id)
@@ -253,12 +306,12 @@ class InputHandler:
 
 
     def __getElementById(self, elements, id):  # TODO: store all as dictionaries for faster access?
-        '''
+        """
         Returns element, if found, else None
         :param elements:
         :param id:
         :return: element | None
-        '''
+        """
         if not isinstance(id, basestring):  # TODO: Throw exception instead?
             id = str(id)
         for element in self.json[elements]:
@@ -267,11 +320,11 @@ class InputHandler:
         return None
 
     def __generate_dict(self, json_element_list, id='id'):
-        '''
+        """
         Returns a dictionary from json_list, with id as key
         :param json_element_list: json_element_list: list of elements form the JSON file, such as self.json['documents']
         :return: dictionary with element id as key
-        '''
+        """
         dict = {}
         for element in json_element_list:
             dict[element[id]] = element

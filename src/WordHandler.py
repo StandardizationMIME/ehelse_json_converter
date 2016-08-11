@@ -42,7 +42,7 @@ class WordHandler:
 
         cells = table.add_row().cells
         cells[0].paragraphs[0].add_run('Status:').italic = True
-        cells[1].text = input_handler.getStatusById(document['statusId'])['name']
+        cells[1].text = input_handler.get_status_name_by_id(document['statusId'])
 
         # -- HIS number
         if (document['hisNumber']):
