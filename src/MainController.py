@@ -18,55 +18,73 @@ class MainController:
         self.input_path = ''
         self.output_path = ''
 
+        # Word handler
+        self.word_handler = WordHandler()
+
+
     def download(self):
         self.__clear_error_message()
         if self.input_path:
             self.output_path = tkFileDialog.asksaveasfilename(defaultextension=".docx")
             if self.output_path:
-                try:
-                    self.__generate_word_document(self.input_path, self.output_path)
-                except Exception as e: # TODO: handle more specific exceptions
-                    print e
-                    self.main_view.set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
+                self.__download_generated_word_document(self.output_path)
+                self.__set_success_message(Messages.SUCCESS_DOWNLOAD)
         else:
-            self.main_view.set_error_message(Messages.ERROR_NO_INPUT_PATH_SELECTED)
+            self.__set_error_message(Messages.ERROR_NO_INPUT_PATH_SELECTED)
 
     def uplpoad(self):
         self.__clear_error_message()
+        self.main_view.disable_download_button(True)
         path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp JSON-fil')
         self.main_view.set_input_path('')
         if not path:
             pass
         elif self.__get_file_extension(path).lower() != 'json':
-            self.main_view.set_error_message(Messages.ERROR_INVALID_FILE_FORMAT)
+            self.__set_error_message(Messages.ERROR_INVALID_FILE_FORMAT)
         else:   # Valid path
-            self.input_path = path
-            self.main_view.set_input_path(self.input_path)
+            try:
+                self.input_path = path
+                self.main_view.set_input_path(self.input_path)
+                self.__generate_word_document(self.input_path)
+                self.main_view.disable_download_button(False)
+            except ValueError as e:
+                print e
+                self.__set_error_message(Messages.ERROR_INVALID_JSON)
+            except Exception as e:
+                print e
+                self.__set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
 
     def __clear_error_message(self):
         self.main_view.set_error_message('')
 
+    def __set_error_message(self, error_message):
+        self.main_view.set_success_message('')
+        self.main_view.set_error_message(error_message)
 
-    def __generate_word_document(self, input_path, output_path):
+    def __set_success_message(self, success_message):
+        self.main_view.set_error_message('')
+        self.main_view.set_success_message(success_message)
+
+
+    def __generate_word_document(self, input_path):
         input_handler = InputHandler(input_path)
-        word_handler = WordHandler()
 
         # Heading
-        word_handler.add_heading('Eksport fra MIME')
+        self.word_handler.add_heading('Eksport fra MIME')
 
         # Content
         for topic in input_handler.getTopics():
             # Topic
-            word_handler.add_topic(topic)
+            self.word_handler.add_topic(topic)
 
             # Document
             for document in input_handler.get_documents_by_topic_id(topic['id']):
-                word_handler.add_document(document, input_handler)
+                self.word_handler.add_document(document, input_handler)
 
-        # Save tile to disk
+    def __download_generated_word_document(self, output_path):
         file_path = self.__get_file_path(output_path)
         file_name = self.__get_file_name(output_path)
-        word_handler.save_word_document(file_path, file_name)
+        self.word_handler.save_word_document(file_path, file_name)
 
         print 'download complete'
 
