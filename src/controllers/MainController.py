@@ -1,10 +1,9 @@
-from InputHandler import *
-from MainView import *
-from Messages import *
-from WordHandler import *
 import tkFileDialog
-from ExportContent import *
-from WordTemplateExporter import *
+from src.logic.InputHandler import *
+from src.helpers.Messages import *
+from src.logic.ExportContent import *
+from src.logic.WordHandler import *
+from src.views.MainView import *
 
 
 class MainController:
