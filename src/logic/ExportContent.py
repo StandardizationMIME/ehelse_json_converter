@@ -1,28 +1,35 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from docx import *  # TODO: check if we can import less
-from docx.shared import Inches
-from docx.oxml.shared import *
-from docxtpl import DocxTemplate
-
 
 class ExportContent:
+
     def __init__(self):
         self.list = {
             'title': '',
             'topics': []
         }
+
     def get_content(self):
         return self.list
 
     def set_title(self, title):
+        """
+        Set title on document. Currently not in template
+        :param title:
+        :return:
+        """
         self.list['title'] = title
 
     def add_topic(self, topic, documents, input_handler):
+        """
+        Add topic with related documents.
+        :param topic: a topic to add to word template.
+        :param documents:   list of documents related to the topic.
+        :param input_handler: instance of InputHandler that contains information needed for lookup.
+        :return:
+        """
         self.list['topics'].append(
             {
                 'title': topic['title'],
-                'documents' : self.__get_document_list(input_handler, documents)
+                'documents': self.__get_document_list(input_handler, documents)
             }
         )
 
@@ -44,10 +51,12 @@ class ExportContent:
             document_id = document['id']
             document_object = {}
 
+            # Doucment content
             document_object['title'] = document['title']
             document_object['description'] = document['description']
             document_object['status'] = input_handler.get_status_name_by_id(document['statusId'])
             document_object['contactAddress'] = input_handler.get_contact_address_name_by_document_id(document_id)
+
             # Fields
             document_object['fields'] = input_handler.get_field_list_by_document_id(document_id)
 
@@ -55,15 +64,15 @@ class ExportContent:
             document_object['mandatoryList'] = []
 
             mandatory_dict = input_handler.get_mandatory_dict_on_document_id(document_id)
-            for mandataory_id, mandataory in mandatory_dict.iteritems():
+            for mandataory_id, mandataory in mandatory_dict.iteritems():  # Loop through all mandatories that appear on the document
                 target_groups = []
-                for target_group in input_handler.get_target_groups_by_mandatory_id_and_document_id(mandataory_id,
-                                                                                                document_id):
+                for target_group in input_handler. \
+                        get_target_groups_by_mandatory_id_and_document_id(mandataory_id, document_id):
                     target_groups.append({
                         'name': input_handler.getTargetGroupById(target_group['targetGroupId'])['name'], # Name of target group
-                        'action': input_handler.get_action_name_by_id(target_group['actionId'])
+                        'action': input_handler.get_action_name_by_id(target_group['actionId'])          # Name of action
                     })
-
+                # -- Add target group fields
                 hjemmel = ''
                 if document['hjemmel'] is not None:
                     hjemmel = document['hjemmel']
@@ -78,16 +87,15 @@ class ExportContent:
                     if mandatory_notice['mandatoryId'] == mandataory_id:
                         notice = mandatory_notice['notice']
                 document_object['mandatoryList'].append({
-                    'name' : mandataory['name'],
+                    'name': mandataory['name'],
                     'targetGroups': target_groups,
                     'hjemmel': hjemmel,
                     'decidedBy': decidedBy,
                     'replacedBy': replacedBy,
                     'notice': notice
-
                 })
 
-            # Headings
+            # Headings with paragraph
             document_object['headings'] = []
             for heading in document['headingContent']:
                 document_object['headings'].append({
@@ -97,7 +105,6 @@ class ExportContent:
 
             # Link categories
             document_object['linksCategories'] = []
-
             link_category_dict = input_handler.get_link_category_dict_by_document_id(document_id)
 
             for link_category_id, link_category in link_category_dict.iteritems():  # Loop through all link categories of the document
@@ -105,17 +112,12 @@ class ExportContent:
                 for link in input_handler.get_links_by_link_category_id_and_document_id(link_category_id,
                                                                                         document_id):  # for each link in current category
                     links.append({
-                        'value': "[[url||%s||%s]]" % (link['text'], link['url'])
+                        'value': "[[url||%s||%s]]" % (link['text'], link['url'])    # This format is read and replaced with a hyperlink using python-docx (docx)
                     })
                 document_object['linksCategories'].append({
                     'name': link_category['name'],
                     'links': links
                 })
             documents_object.append(document_object)
+
         return documents_object
-
-
-
-
-
-
