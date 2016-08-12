@@ -27,6 +27,18 @@ class ExportContent:
         )
 
     def __get_document_list(self, input_handler, documents):
+        """
+        Generates a document list on the format the template understand.
+
+        Hyperlinks are not supported in python-docx-template (docxtpl), and are therefore inserted as:
+            "[[url||url_name||text]]", where url is the descriptive keyword to recognize what it is.
+            url_name is the url you want the hyperlink to link to, and
+            text is the text you want the link to have.
+            Links will hat to be inserted using python-docx later.
+        :param input_handler: input from JSON file
+        :param documents: the documents to add to the list (e.g. for a topic)
+        :return: {}: documents
+        """
         documents_object = []
         for document in documents:
             document_id = document['id']
@@ -83,6 +95,28 @@ class ExportContent:
                     'text': heading['text']
                 })
 
+            # Link categories
+            '''
+            document_object['linksCategories'] = [{
+                'name': 'name',
+
+            }]
+            '''
+            document_object['linksCategories'] = []
+
+            link_category_dict = input_handler.get_link_category_dict_by_document_id(document_id)
+
+            for link_category_id, link_category in link_category_dict.iteritems():  # Loop through all link categories of the document
+                links = []
+                for link in input_handler.get_links_by_link_category_id_and_document_id(link_category_id,
+                                                                                        document_id):  # for each link in current category
+                    links.append({
+                        'value': "[[url||%s||%s]]" % (link['text'], link['url'])
+                    })
+                document_object['linksCategories'].append({
+                    'name': link_category['name'],
+                    'links': links
+                })
             documents_object.append(document_object)
         return documents_object
 
