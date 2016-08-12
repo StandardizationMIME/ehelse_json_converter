@@ -139,8 +139,9 @@ class MainController:
         :return:
         """
         # Python-docx-template
-        word_template_exporter = WordTemplateExporter(self.input_path_template)
-        word_template_exporter.save_file(self.export_content.get_content(), output_path)
+        template = DocxTemplate(self.input_path_template)
+        template.render(self.export_content.get_content())
+        template.save(self.output_path)
         # Python-docx
         word_handler = WordHandler(output_path)
         word_handler.insert_hyper_links()
