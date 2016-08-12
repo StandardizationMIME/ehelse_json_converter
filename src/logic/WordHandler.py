@@ -165,6 +165,7 @@ class WordHandler:
        self.word_document.save(file_path)
        # self.word_document.save("%s/%s.docx" % (file_path, file_name))
 
+    # Sorce: https://github.com/python-openxml/python-docx/issues/74
     # Credit: https://github.com/rushton3179
     def __add_hyperlink(self, paragraph, url, text):
         """
