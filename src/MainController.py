@@ -14,10 +14,12 @@ class MainController:
         self.main_view = MainView(root)
 
         self.main_view.upload_button.config(command=self.uplpoad)
+        self.main_view.upload_button_template.config(command=self.uplpoad_template)
         self.main_view.download_button.config(command=self.download)
 
         # Paths
         self.input_path = ''
+        self.input_path_template = ''
         self.output_path = ''
 
         self.export_content = ExportContent()
@@ -59,6 +61,29 @@ class MainController:
                 print e
                 self.__set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
 
+    def uplpoad_template(self): # TODO: change name - spelling error!
+        print 'upload template'
+        self.__clear_error_message()
+        self.main_view.disable_download_button(True)
+        path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp Word-mal')
+        self.main_view.set_input_path_template('')
+        if not path:
+            pass
+        elif self.__get_file_extension(path).lower() != 'docx':
+            self.__set_error_message(Messages.ERROR_INVALID_FILE_FORMAT)
+        else:  # Valid path
+            try:
+                self.input_path_template = path
+                self.main_view.set_input_path_template(self.input_path_template)
+                #self.__generate_word_document(self.input_path)
+                self.main_view.disable_download_button(False)
+            except ValueError as e:
+                print e
+                self.__set_error_message(Messages.ERROR_INVALID_JSON)
+            except Exception as e:
+                print e
+                self.__set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
+
     def __clear_error_message(self):
         self.main_view.set_error_message('')
 
@@ -73,7 +98,7 @@ class MainController:
 
     def __generate_word_document(self, input_path):
 
-        input_handler = InputHandler('c:/users/AK/Desktop/aaa02.json')
+        input_handler = InputHandler(input_path)
 
         self.export_content.set_title('Eksport fra Mime')
 
@@ -106,8 +131,7 @@ class MainController:
         # file_path = self.__get_file_path(output_path)
         # file_name = self.__get_file_name(output_path)
         #output_path = 'c:/users/AK/Desktop/output111.docx'
-        word_template_exporter = WordTemplateExporter(
-            'C:/Users/AK/Documents/GitHub/ehelse_json_converter/templates/template.docx')
+        word_template_exporter = WordTemplateExporter(self.input_path_template)
         word_template_exporter.save_file(self.export_content.get_content(), output_path)
         word_handler = WordHandler(output_path)
         word_handler.insert_hyper_links()
