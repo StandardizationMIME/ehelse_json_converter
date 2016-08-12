@@ -16,21 +16,20 @@ class WordHandler:
 
     word_document = None
 
-    word_template = None
+    # = None
     content = {}
 
-    def __init__(self, template_path):
-        self.word_template = DocxTemplate('word_file.docx')
-
-        #self.word_document = Document()
+    def __init__(self, template_path=None):
+        if template_path:
+            self.word_document = DocxTemplate(template_path)
+        else:
+            self.word_document = Document()
 
     def add_heading(self, heading):
-        self.content['title'] = heading
-        #self.word_document.add_heading(heading, level=self.HEADING_1)
+        self.word_document.add_heading(heading, level=self.HEADING_1)
 
     def add_topic(self, topic):
-        self.content['topics']
-        #self.word_document.add_heading(topic['title'], level=self.HEADING_2)
+        self.word_document.add_heading(topic['title'], level=self.HEADING_2)
 
     def add_document(self, document, input_handler):
         document_id = document["id"]
@@ -132,14 +131,39 @@ class WordHandler:
         self.word_document.add_heading('Kontaktadresse', level=self.HEADING_4)
         self.word_document.add_paragraph(input_handler.get_contact_address_name_by_document_id(document_id))
 
+    def insert_hyper_links(self):
+        for paragraph in self.word_document.paragraphs:
+            # print paragraph.text
+            content = self.get_substring_between(paragraph.text, '[[', ']]')
+            if len(content) > 0:
+                url_content_array = words = content.split("||")
+                type = url_content_array[0]
+                if type == 'url':
+                    text = url_content_array[1]
+                    url = url_content_array[2]
+                    paragraph.text = ''
+                    self.__add_hyperlink(paragraph, url, text)
+
+    def get_substring_between(self, string, first_substring, last_substring):
+        """
+        Returns a a substring between two specified substring.
+        E.g. get_substring_between('first second, third', 'first', 'third') => ' second '.
+        :param string: the string you want to return a substring from
+        :param first_substring:
+        :param last_substring:
+        :return:
+        """
+        try:
+            start = string.index(first_substring) + len(first_substring)
+            end = string.index(last_substring, start)
+            return string[start:end]
+        except Exception:
+            return ''
 
 
-
-    def save_word_document(self, file_path, file_name, content_list):
-        if self.word_template:
-            self.word_template.render(content_list)
-            self.word_template.save('c:/users/AK/Desktop/this2.docx')
-        #self.word_document.save("%s/%s.docx" % (file_path, file_name))
+    def save_word_document(self, file_path):
+       self.word_document.save(file_path)
+       # self.word_document.save("%s/%s.docx" % (file_path, file_name))
 
     # Credit: https://github.com/rushton3179
     def __add_hyperlink(self, paragraph, url, text):

@@ -96,12 +96,6 @@ class ExportContent:
                 })
 
             # Link categories
-            '''
-            document_object['linksCategories'] = [{
-                'name': 'name',
-
-            }]
-            '''
             document_object['linksCategories'] = []
 
             link_category_dict = input_handler.get_link_category_dict_by_document_id(document_id)

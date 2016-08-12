@@ -85,9 +85,14 @@ class MainController:
             documents = input_handler.get_documents_by_topic_id(topic['id'])
 
             export_content.add_topic(topic, documents, input_handler)
+        output_path = 'c:/users/AK/Desktop/output111.docx'
 
-        word_template_exporter = WordTemplateExporter('test')
-        word_template_exporter.save_file(export_content.get_content(),'')
+        word_template_exporter = WordTemplateExporter('C:/Users/AK/Documents/GitHub/ehelse_json_converter/templates/template.docx')
+        word_template_exporter.save_file(export_content.get_content(), output_path)
+
+        word_handler = WordHandler(output_path)
+        word_handler.insert_hyper_links()
+        word_handler.save_word_document(output_path)
 
         '''
 
