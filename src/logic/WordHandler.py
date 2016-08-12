@@ -3,6 +3,7 @@
 from docx import *  #TODO: check if we can import less
 from docx.shared import Inches
 from docx.oxml.shared import *
+from docxtpl import DocxTemplate
 import os
 import sys
 
@@ -15,8 +16,14 @@ class WordHandler:
 
     word_document = None
 
-    def __init__(self):
-        self.word_document = Document()
+    # = None
+    content = {}
+
+    def __init__(self, template_path=None):
+        if template_path:
+            self.word_document = DocxTemplate(template_path)
+        else:
+            self.word_document = Document()
 
     def add_heading(self, heading):
         self.word_document.add_heading(heading, level=self.HEADING_1)
@@ -124,12 +131,41 @@ class WordHandler:
         self.word_document.add_heading('Kontaktadresse', level=self.HEADING_4)
         self.word_document.add_paragraph(input_handler.get_contact_address_name_by_document_id(document_id))
 
+    def insert_hyper_links(self):
+        for paragraph in self.word_document.paragraphs:
+            # print paragraph.text
+            content = self.get_substring_between(paragraph.text, '[[', ']]')
+            if len(content) > 0:
+                url_content_array = words = content.split("||")
+                type = url_content_array[0]
+                if type == 'url':
+                    text = url_content_array[1]
+                    url = url_content_array[2]
+                    paragraph.text = ''
+                    self.__add_hyperlink(paragraph, url, text)
+
+    def get_substring_between(self, string, first_substring, last_substring):
+        """
+        Returns a a substring between two specified substring.
+        E.g. get_substring_between('first second, third', 'first', 'third') => ' second '.
+        :param string: the string you want to return a substring from
+        :param first_substring:
+        :param last_substring:
+        :return:
+        """
+        try:
+            start = string.index(first_substring) + len(first_substring)
+            end = string.index(last_substring, start)
+            return string[start:end]
+        except Exception:
+            return ''
 
 
+    def save_word_document(self, file_path):
+       self.word_document.save(file_path)
+       # self.word_document.save("%s/%s.docx" % (file_path, file_name))
 
-    def save_word_document(self, file_path, file_name):
-        self.word_document.save("%s/%s.docx" % (file_path, file_name))
-
+    # Sorce: https://github.com/python-openxml/python-docx/issues/74
     # Credit: https://github.com/rushton3179
     def __add_hyperlink(self, paragraph, url, text):
         """

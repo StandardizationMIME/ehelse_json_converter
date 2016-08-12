@@ -83,6 +83,11 @@ class InputHandler:
     def get_heading_dict_by_document_id(self, id):
         return self.get_element_dict_by_document_id('headings', 'headingContent', 'headingId', id)
 
+    def get_heading_name_by_heading_id(self, id):
+        return self.__getElementById('headings', id)['name']
+
+    def get_headings(self):
+        return self.json['headings']
     def get_heading_content_by_heading_id_and_document_id(self, heading_id, document_id):
         document = self.getDocumentById(document_id)
         for heading in document['headingContent']:
@@ -210,6 +215,7 @@ class InputHandler:
         return self.json
 
     def getTopics(self):
+        return self.json['topics'] # TODO: Check sort!
         if (self.json):
             return self.get_sorted_topics(self.json['topics'])
 
