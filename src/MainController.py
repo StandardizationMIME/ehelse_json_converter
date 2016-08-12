@@ -12,9 +12,8 @@ class MainController:
     def __init__(self, root):
         # View config
         self.main_view = MainView(root)
-
-        self.main_view.upload_button.config(command=self.uplpoad)
-        self.main_view.upload_button_template.config(command=self.uplpoad_template)
+        self.main_view.upload_button.config(command=self.upload)
+        self.main_view.upload_button_template.config(command=self.upload_template)
         self.main_view.download_button.config(command=self.download)
 
         # Paths
@@ -22,14 +21,16 @@ class MainController:
         self.input_path_template = ''
         self.output_path = ''
 
+        # Export content
         self.export_content = ExportContent()
 
-        # Word handler
-        #self.word_handler = WordHandler()
-        #self.__generate_word_document('')
-
-
     def download(self):
+        """
+        Downloads word document
+
+        Triggered on download_button click
+        :return:
+        """
         self.__clear_error_message()
         if self.input_path:
             self.output_path = tkFileDialog.asksaveasfilename(defaultextension=".docx")
@@ -39,7 +40,13 @@ class MainController:
         else:
             self.__set_error_message(Messages.ERROR_NO_INPUT_PATH_SELECTED)
 
-    def uplpoad(self):
+    def upload(self):
+        """
+        Uploads JSON input file
+
+        Triggered on upload_button click
+        :return:
+        """
         self.__clear_error_message()
         self.main_view.disable_download_button(True)
         path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp JSON-fil')
@@ -53,7 +60,7 @@ class MainController:
                 self.input_path = path
                 self.main_view.set_input_path(self.input_path)
                 self.__generate_word_document(self.input_path)
-                self.main_view.disable_download_button(False)
+                self.__check_downloadable()
             except ValueError as e:
                 print e
                 self.__set_error_message(Messages.ERROR_INVALID_JSON)
@@ -61,8 +68,13 @@ class MainController:
                 print e
                 self.__set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
 
-    def uplpoad_template(self): # TODO: change name - spelling error!
-        print 'upload template'
+    def upload_template(self):
+        """
+        Uploads Word template
+
+        Triggered on upload_button_template click
+        :return:
+        """
         self.__clear_error_message()
         self.main_view.disable_download_button(True)
         path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp Word-mal')
@@ -75,14 +87,22 @@ class MainController:
             try:
                 self.input_path_template = path
                 self.main_view.set_input_path_template(self.input_path_template)
-                #self.__generate_word_document(self.input_path)
-                self.main_view.disable_download_button(False)
+                self.__check_downloadable()
             except ValueError as e:
                 print e
                 self.__set_error_message(Messages.ERROR_INVALID_JSON)
             except Exception as e:
                 print e
                 self.__set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
+
+    def __check_downloadable(self):
+        """
+        Checks that both a JSON file and a Word template is uploaded.
+        :return:
+        """
+        print 'download'
+        if self.input_path and self.input_path_template:
+            self.main_view.disable_download_button(False)
 
     def __clear_error_message(self):
         self.main_view.set_error_message('')
@@ -95,50 +115,36 @@ class MainController:
         self.main_view.set_error_message('')
         self.main_view.set_success_message(success_message)
 
-
     def __generate_word_document(self, input_path):
-
+        """
+        Generates word document
+        :param input_path:
+        :return:
+        """
         input_handler = InputHandler(input_path)
-
-        self.export_content.set_title('Eksport fra Mime')
-
 
         topics = input_handler.getTopics()
         for topic in topics:
             documents = input_handler.get_documents_by_topic_id(topic['id'])
-
             self.export_content.add_topic(topic, documents, input_handler)
 
-
-        '''
-
-        input_handler = InputHandler(input_path)
-
-        # Heading
-        self.word_handler.add_heading('Eksport fra MIME')
-
-        # Content
-        for topic in input_handler.getTopics():
-            # Topic
-            self.word_handler.add_topic(topic)
-
-            # Document
-            for document in input_handler.get_documents_by_topic_id(topic['id']):
-                self.word_handler.add_document(document, input_handler)
-        '''
-
     def __download_generated_word_document(self, output_path):
-        # file_path = self.__get_file_path(output_path)
-        # file_name = self.__get_file_name(output_path)
-        #output_path = 'c:/users/AK/Desktop/output111.docx'
+        """
+        Downloads docx file with the inserted values from json file.
+        There is no support for for links in python-docx-template (docxtpl),
+        therefore the file is first saved, and then read using python-docx (docx)
+        to replace the links with working hyperlinks, before the file is written
+        back to disk.
+        :param output_path:
+        :return:
+        """
+        # Python-docx-template
         word_template_exporter = WordTemplateExporter(self.input_path_template)
         word_template_exporter.save_file(self.export_content.get_content(), output_path)
+        # Python-docx
         word_handler = WordHandler(output_path)
         word_handler.insert_hyper_links()
         word_handler.save_word_document(output_path)
-
-        #self.word_handler.save_word_document(file_path, file_name)
-
         print 'download complete'
 
     def __get_file_path(self, full_path):
@@ -153,4 +159,4 @@ class MainController:
     def __get_file_extension(self, full_path):
         file_name_with_extension = full_path[len(self.__get_file_path(full_path)) + 1:]
         file_extension_index = file_name_with_extension.rfind('.')
-        return file_name_with_extension[file_extension_index+1 :]
+        return file_name_with_extension[file_extension_index+1:]
