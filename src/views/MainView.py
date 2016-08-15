@@ -54,13 +54,14 @@ class MainView(tk.Toplevel):
         self.download_button.grid(row=4)
 
         # Messages
+        # -- Error
         self.error_message = tk.StringVar()
         self.error_message_label = tk.Label(self.content_frame, textvariable=self.error_message, fg='red')
         self.error_message_label.grid(row=5)
-
+        # -- Success
         self.success_message = tk.StringVar()
         self.success_message_label = tk.Label(self.content_frame, textvariable=self.success_message)
-        self.success_message_label.grid(row=5)
+        self.success_message_label.grid(row=6)
 
     def set_input_path(self, input_path):
         self.input_path.set(input_path)
