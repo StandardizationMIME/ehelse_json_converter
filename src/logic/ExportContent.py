@@ -5,6 +5,10 @@ class ExportContent:
         self.reset_list()
 
     def reset_list(self):
+        """
+        Set list top empty
+        :return:
+        """
         self.list = {
             'title': '',
             'topics': []
@@ -12,7 +16,6 @@ class ExportContent:
 
     def get_content(self):
         return self.list
-
 
     def set_title(self, title):
         """
@@ -74,16 +77,16 @@ class ExportContent:
                 target_groups = []
                 for target_group in input_handler. \
                         get_target_groups_by_mandatory_id_and_document_id(mandataory_id, document_id):
-                    if target_group['targetGroupId'] == target_group_id:
+                    if target_group_id == target_group['targetGroupId'] or input_handler.is_child_of(target_group_id, target_group['targetGroupId']):
                         include = True
                     target_groups.append({
                         'name': input_handler.getTargetGroupById(target_group['targetGroupId'])['name'], # Name of target group
                         'action': input_handler.get_action_name_by_id(target_group['actionId'])          # Name of action
                     })
                 # -- Add target group fields
-                hjemmel = ''
-                if document['hjemmel'] is not None:
-                    hjemmel = document['hjemmel']
+                targetGroupLegalBases = ''
+                if document['targetGroupLegalBases'] is not None:
+                    targetGroupLegalBases = document['targetGroupLegalBases']
                 decidedBy = ''
                 if document['decidedBy'] is not None:
                     decidedBy = document['decidedBy']
@@ -97,7 +100,7 @@ class ExportContent:
                 document_object['mandatoryList'].append({
                     'name': mandataory['name'],
                     'targetGroups': target_groups,
-                    'hjemmel': hjemmel,
+                    'targetGroupLegalBases': targetGroupLegalBases,
                     'decidedBy': decidedBy,
                     'replacedBy': replacedBy,
                     'notice': notice
@@ -131,7 +134,5 @@ class ExportContent:
                 documents_object.append(document_object)
             elif target_group_id > 0 and include:
                 documents_object.append(document_object)
-                print 'target group added: '
-                print document['title']
 
         return documents_object

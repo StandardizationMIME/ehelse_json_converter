@@ -14,7 +14,6 @@ class InputHandler:
     def __init__(self, file_path):
         with open(file_path, 'r') as content_file:
             content = content_file.read()
-            # print content
             j = json.loads(content)
             self.json = j
 
@@ -236,9 +235,6 @@ class InputHandler:
             children = self.__get_list_of_topic_children(topics, top_level_topic)
             sorted_topics.extend(children)
 
-        for t in sorted_topics:
-            print t['title']
-
         return sorted_topics
 
 
@@ -299,8 +295,8 @@ class InputHandler:
             pass
         return action_name
 
-    def get_hjemmel_by_document_id(self, id):
-        return self.getDocumentById(id)['hjemmel']
+    def get_target_group_legal_bases_by_document_id(self, id):
+        return self.getDocumentById(id)['targetGroupLegalBases']
 
     def get_decided_by_by_document_id(self, id):
         return self.getDocumentById(id)['decidedBy']
@@ -335,3 +331,14 @@ class InputHandler:
         for element in json_element_list:
             dict[element[id]] = element
         return dict
+
+    def is_child_of(self, parent_id, child_id):
+        child = self.getTargetGroupById(child_id)
+        if child:
+            if child and child['parentId'] is None:
+                return False
+            if child['parentId'] == parent_id:
+                return True
+            else:
+                return self.is_child_of(parent_id, child['parentId'])
+        return False

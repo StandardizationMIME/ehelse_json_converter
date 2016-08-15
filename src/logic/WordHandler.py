@@ -89,11 +89,11 @@ class WordHandler:
 
                 row_number += 1
 
-            if input_handler.get_hjemmel_by_document_id(document_id) and mandataory_id == '1':
+            if input_handler.get_target_group_legal_bases_by_document_id(document_id) and mandataory_id == '1':
                 text = '• Hjemmel:'
                 cells = target_groups_table.add_row().cells
                 cells[0].paragraphs[0].add_run(text.decode(self.UTF8)).italic = True
-                cells[1].text = input_handler.get_hjemmel_by_document_id(document_id)
+                cells[1].text = input_handler.get_target_group_legal_bases_by_document_id(document_id)
             elif input_handler.get_decided_by_by_document_id(document_id) and mandataory_id == '1':
                 text = '• Erstattes av:'
                 cells = target_groups_table.add_row().cells
@@ -133,7 +133,6 @@ class WordHandler:
 
     def insert_hyper_links(self):
         for paragraph in self.word_document.paragraphs:
-            # print paragraph.text
             content = self.get_substring_between(paragraph.text, '[[', ']]')
             if len(content) > 0:
                 url_content_array = words = content.split("||")
