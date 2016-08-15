@@ -33,12 +33,20 @@ class MainController:
         Triggered on download_button click
         :return:
         """
-        self.__clear_error_message()
+        self.__clear_messages()
         if self.input_path:
             self.output_path = tkFileDialog.asksaveasfilename(defaultextension=".docx")
             if self.output_path:
                 self.__download_generated_word_document(self.output_path)
                 self.__set_success_message(Messages.SUCCESS_DOWNLOAD)
+                try:
+                    pass
+                except ValueError as e:
+                    print e
+                    self.__set_error_message(Messages.ERROR_INVALID_JSON)
+                except Exception as e:
+                    print e
+                    self.__set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
         else:
             self.__set_error_message(Messages.ERROR_NO_INPUT_PATH_SELECTED)
 
@@ -49,7 +57,7 @@ class MainController:
         Triggered on upload_button click
         :return:
         """
-        self.__clear_error_message()
+        self.__clear_messages()
         self.main_view.disable_download_button(True)
         path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp JSON-fil')
         self.main_view.set_input_path('')
@@ -78,7 +86,7 @@ class MainController:
         Triggered on upload_button_template click
         :return:
         """
-        self.__clear_error_message()
+        self.__clear_messages()
         self.main_view.disable_download_button(True)
         path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp Word-mal')
         self.main_view.set_input_path_template('')
@@ -122,8 +130,9 @@ class MainController:
         if self.input_path and self.input_path_template:
             self.main_view.disable_download_button(False)
 
-    def __clear_error_message(self):
+    def __clear_messages(self):
         self.main_view.set_error_message('')
+        self.main_view.set_success_message('')
 
     def __set_error_message(self, error_message):
         self.main_view.set_success_message('')
