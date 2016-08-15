@@ -1,3 +1,4 @@
+from datetime import datetime
 
 class ExportContent:
 
@@ -11,6 +12,7 @@ class ExportContent:
         """
         self.list = {
             'title': '',
+            'timestamp': self.__get_timestamp(),
             'topics': []
         }
 
@@ -136,3 +138,11 @@ class ExportContent:
                 documents_object.append(document_object)
 
         return documents_object
+
+    def __get_timestamp(self):
+        """
+        Returns timestamp on the format YYYY-DD-MM hh:mm:ss as string
+        :return:
+        """
+        timestamp = str(datetime.now())
+        return timestamp[:19]
