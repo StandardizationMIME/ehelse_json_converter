@@ -2,6 +2,9 @@
 class ExportContent:
 
     def __init__(self):
+        self.reset_list()
+
+    def reset_list(self):
         self.list = {
             'title': '',
             'topics': []
@@ -9,6 +12,7 @@ class ExportContent:
 
     def get_content(self):
         return self.list
+
 
     def set_title(self, title):
         """
@@ -18,7 +22,7 @@ class ExportContent:
         """
         self.list['title'] = title
 
-    def add_topic(self, topic, documents, input_handler):
+    def add_topic(self, topic, documents, input_handler, target_group_id):
         """
         Add topic with related documents.
         :param topic: a topic to add to word template.
@@ -29,11 +33,11 @@ class ExportContent:
         self.list['topics'].append(
             {
                 'title': topic['title'],
-                'documents': self.__get_document_list(input_handler, documents)
+                'documents': self.__get_document_list(input_handler, documents, target_group_id)
             }
         )
 
-    def __get_document_list(self, input_handler, documents):
+    def __get_document_list(self, input_handler, documents, target_group_id):
         """
         Generates a document list on the format the template understand.
 
@@ -48,6 +52,8 @@ class ExportContent:
         """
         documents_object = []
         for document in documents:
+            include = False # Set to True, if target group filter is on, and selected target group exists in document
+
             document_id = document['id']
             document_object = {}
 
@@ -68,6 +74,8 @@ class ExportContent:
                 target_groups = []
                 for target_group in input_handler. \
                         get_target_groups_by_mandatory_id_and_document_id(mandataory_id, document_id):
+                    if target_group['targetGroupId'] == target_group_id:
+                        include = True
                     target_groups.append({
                         'name': input_handler.getTargetGroupById(target_group['targetGroupId'])['name'], # Name of target group
                         'action': input_handler.get_action_name_by_id(target_group['actionId'])          # Name of action
@@ -118,6 +126,12 @@ class ExportContent:
                     'name': link_category['name'],
                     'links': links
                 })
-            documents_object.append(document_object)
+
+            if target_group_id == 0:
+                documents_object.append(document_object)
+            elif target_group_id > 0 and include:
+                documents_object.append(document_object)
+                print 'target group added: '
+                print document['title']
 
         return documents_object

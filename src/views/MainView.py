@@ -1,4 +1,5 @@
 import Tkinter as tk
+from src.helpers.Messages import *
 
 
 class MainView(tk.Toplevel):
@@ -40,6 +41,13 @@ class MainView(tk.Toplevel):
         self.upload_button_template = tk.Button(self.top_frame, text='Last opp Word-mal')
         self.upload_button_template.grid(row=1, column=1)
 
+        self.options = [Messages.DROPDOWN_VALUE_NO_SELECTED_TARGET_GROUP]
+        self.selected_target_group = tk.StringVar()
+        self.selected_target_group.set(self.options[0])  # default value
+
+        self.target_groups_drop_down = tk.OptionMenu(self.content_frame, self.selected_target_group, *self.options)
+        self.target_groups_drop_down.grid(row=5)
+
         # Download
         self.download_button = tk.Button(self.content_frame, text='Last ned Word-fil', state='disabled')
         self.download_button.grid(row=2)
@@ -71,4 +79,3 @@ class MainView(tk.Toplevel):
             self.download_button.config(state='disabled')
         else:
             self.download_button.config(state='normal')
-

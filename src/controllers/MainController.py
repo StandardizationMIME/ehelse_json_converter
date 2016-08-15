@@ -20,8 +20,14 @@ class MainController:
         self.input_path_template = ''
         self.output_path = ''
 
+        # Target groups
+        self.target_groups_dict = {}
+
         # Export content
         self.export_content = ExportContent()
+        self.input_handler = None
+
+
 
     def download(self):
         """
@@ -48,7 +54,8 @@ class MainController:
         """
         self.__clear_error_message()
         self.main_view.disable_download_button(True)
-        path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp JSON-fil')
+        #path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp JSON-fil')
+        path = 'c:/users/ak/desktop/aaa02.json'
         self.main_view.set_input_path('')
         if not path:
             pass
@@ -57,8 +64,9 @@ class MainController:
         else:   # Valid path
             try:
                 self.input_path = path
+                self.input_handler = InputHandler(self.input_path)
+                self.test()
                 self.main_view.set_input_path(self.input_path)
-                self.__generate_word_document(self.input_path)
                 self.__check_downloadable()
             except ValueError as e:
                 print e
@@ -76,7 +84,8 @@ class MainController:
         """
         self.__clear_error_message()
         self.main_view.disable_download_button(True)
-        path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp Word-mal')
+        #path = tkFileDialog.askopenfilename(parent=self.main_view, initialdir="/", title='Last opp Word-mal')
+        path = 'c:/users/ak/desktop/demonstrasjon/template.docx'
         self.main_view.set_input_path_template('')
         if not path:
             pass
@@ -93,6 +102,23 @@ class MainController:
             except Exception as e:
                 print e
                 self.__set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
+
+    def test(self): #TODO: change name!
+        m = self.main_view.target_groups_drop_down.children['menu']
+        # m.delete(0, END)
+
+        target_groups = self.input_handler.getTargetGroups()
+
+        newvalues = "a b c d e f".split()
+        for target_group in target_groups:
+            target_group_name = target_group['name']
+            print target_group_name
+            self.target_groups_dict[target_group_name] = target_group['id']
+            m.add_command(label=target_group_name, command=lambda v=self.main_view.selected_target_group, l=target_group_name: v.set(l))
+        #self.main_view.selected_target_group.set(newvalues[0])
+
+    def __select_target_group_export(self):
+        print 'go'
 
     def __check_downloadable(self):
         """
@@ -120,12 +146,16 @@ class MainController:
         :param input_path:
         :return:
         """
-        input_handler = InputHandler(input_path)
-
-        topics = input_handler.getTopics()
+        topics = self.input_handler.getTopics()
         for topic in topics:
-            documents = input_handler.get_documents_by_topic_id(topic['id'])
-            self.export_content.add_topic(topic, documents, input_handler)
+            documents = self.input_handler.get_documents_by_topic_id(topic['id'])
+            self.export_content.add_topic(topic, documents, self.input_handler, 0)
+
+    def __generate_word_document_based_on_target_groups(self, target_group_id):
+        topics = self.input_handler.getTopics()
+        for topic in topics:
+            documents = self.input_handler.get_documents_by_topic_id(topic['id'])
+            self.export_content.add_topic(topic, documents, self.input_handler, target_group_id)
 
     def __download_generated_word_document(self, output_path):
         """
@@ -137,9 +167,19 @@ class MainController:
         :param output_path:
         :return:
         """
-        # Python-docx-template
         template = DocxTemplate(self.input_path_template)
-        template.render(self.export_content.get_content())
+
+        self.export_content.reset_list()    # Reset list, to make sure it is not repeated on multiple downloads
+
+        if self.main_view.selected_target_group.get() == Messages.DROPDOWN_VALUE_NO_SELECTED_TARGET_GROUP:
+            self.__generate_word_document(self.input_path)
+        else:
+            target_group = self.input_handler.getTargetGroupById(self.target_groups_dict[self.main_view.selected_target_group.get()])
+            self.__generate_word_document_based_on_target_groups(target_group['id'])
+        content = self.export_content.get_content()
+        # Python-docx-template
+
+        template.render(content)
         template.save(self.output_path)
         # Python-docx
         word_handler = WordHandler(output_path)

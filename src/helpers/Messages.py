@@ -7,3 +7,8 @@ class Messages:
 
     # Success messages
     SUCCESS_DOWNLOAD = 'Fil lastet ned.'
+
+    # Button values
+
+    # Drop down
+    DROPDOWN_VALUE_NO_SELECTED_TARGET_GROUP = 'Ingen'
