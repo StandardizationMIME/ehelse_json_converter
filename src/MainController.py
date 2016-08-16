@@ -1,8 +1,9 @@
 import tkFileDialog
-from src.logic.InputHandler import *
-from src.logic.ExportContent import *
-from src.logic.WordHandler import *
-from src.views.MainView import *
+
+from ExportContent import *
+from InputHandler import *
+from WordHandler import *
+from MainView import *
 
 
 class MainController:

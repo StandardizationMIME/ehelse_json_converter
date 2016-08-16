@@ -1,5 +1,6 @@
 import Tkinter as tk
-from src.helpers.Messages import *
+
+from Messages import *
 
 
 class MainView(tk.Toplevel):

@@ -4,8 +4,7 @@ from docx import *  #TODO: check if we can import less
 from docx.shared import Inches
 from docx.oxml.shared import *
 from docxtpl import DocxTemplate
-import os
-import sys
+
 
 class WordHandler:
     HEADING_1 = 1

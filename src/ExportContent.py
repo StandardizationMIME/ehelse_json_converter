@@ -65,11 +65,33 @@ class ExportContent:
             # Doucment content
             document_object['title'] = document['title']
             document_object['description'] = document['description']
-            document_object['status'] = input_handler.get_status_name_by_id(document['statusId'])
+            document_object['status '] = input_handler.get_status_name_by_id(document['statusId'])
             document_object['contactAddress'] = input_handler.get_contact_address_name_by_document_id(document_id)
 
             # Fields
-            document_object['fields'] = input_handler.get_field_list_by_document_id(document_id)
+            fields = []
+            # Status
+            '''
+            print 'status len:'
+            print len(document['statusId'])
+            if len(document['statusId']) > 0:
+                fields.append({
+                    'name': 'Status',
+                    'value': input_handler.get_status_name_by_id(document['statusId'])
+
+                })
+            # HIS
+            if len(document['hisNumber']) > 0:
+                fields.append({
+                    'name': 'HIS-nummer',
+                    'value': document['hisNumber']
+
+                })
+            '''
+
+            fields.extend(input_handler.get_field_list_by_document_id(document_id))
+
+            document_object['fields'] = fields
 
             # Target groups
             document_object['mandatoryList'] = []
@@ -87,18 +109,22 @@ class ExportContent:
                     })
                 # -- Add target group fields
                 targetGroupLegalBases = ''
-                if document['targetGroupLegalBases'] is not None:
-                    targetGroupLegalBases = document['targetGroupLegalBases']
                 decidedBy = ''
-                if document['decidedBy'] is not None:
-                    decidedBy = document['decidedBy']
                 replacedBy = ''
-                if document['replacedBy'] is not None:
-                    replacedBy = document['replacedBy']
                 notice = ''
+
+                if mandataory['id'] == '1':    # Only "obligatorisk" will have these fields
+                    if document['targetGroupLegalBases'] is not None:
+                        targetGroupLegalBases = document['targetGroupLegalBases']
+                    if document['decidedBy'] is not None:
+                        decidedBy = document['decidedBy']
+                    if document['replacedBy'] is not None:
+                        replacedBy = document['replacedBy']
+
                 for mandatory_notice in document['mandatoryNotices']:
                     if mandatory_notice['mandatoryId'] == mandataory_id:
                         notice = mandatory_notice['notice']
+
                 document_object['mandatoryList'].append({
                     'name': mandataory['name'],
                     'targetGroups': target_groups,
