@@ -65,32 +65,26 @@ class ExportContent:
             # Doucment content
             document_object['title'] = document['title']
             document_object['description'] = document['description']
-            document_object['status '] = input_handler.get_status_name_by_id(document['statusId'])
             document_object['contactAddress'] = input_handler.get_contact_address_name_by_document_id(document_id)
 
             # Fields
             fields = []
-            # Status
-            '''
-            print 'status len:'
-            print len(document['statusId'])
-            if len(document['statusId']) > 0:
-                fields.append({
-                    'name': 'Status',
-                    'value': input_handler.get_status_name_by_id(document['statusId'])
 
-                })
-            # HIS
-            if len(document['hisNumber']) > 0:
-                fields.append({
-                    'name': 'HIS-nummer',
-                    'value': document['hisNumber']
+            # -- Status
+            status = self.__get_field('Status', input_handler.get_status_name_by_id(document['statusId']))
+            if status:
+                fields.append(status)
+            # -- Internal ID
 
-                })
-            '''
+            internal_id = self.__get_field('Intern ID', document['internalId'])
+            if internal_id:
+                fields.append(internal_id)
+            # -- HIS
+            his = self.__get_field('HIS-nummer', document['hisNumber'])
+            if his:
+                fields.append(his)
 
             fields.extend(input_handler.get_field_list_by_document_id(document_id))
-
             document_object['fields'] = fields
 
             # Target groups
@@ -173,3 +167,17 @@ class ExportContent:
         """
         timestamp = str(datetime.now())
         return timestamp[:19]
+
+    def __get_field(self, name, value):
+        """
+        Returns field element on valid element.
+        :param name: e.g. 'HIS-nummer'
+        :param value: field from a document, e.g. document['his']
+        :return:
+        """
+        if value and len(value) > 0:
+            return {
+                'name': name,
+                'value': value
+            }
+        return None
