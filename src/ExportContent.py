@@ -105,6 +105,7 @@ class ExportContent:
                         include = True
                     target_groups.append({
                         'name': input_handler.getTargetGroupById(target_group['targetGroupId'])['name'], # Name of target group
+                        'deadline': target_group['deadline'],
                         'action': input_handler.get_action_name_by_id(target_group['actionId'])          # Name of action
                     })
                 # -- Add target group fields
