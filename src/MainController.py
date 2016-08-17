@@ -187,6 +187,7 @@ class MainController:
             # Python-docx - replace links and save
             word_handler = WordHandler(output_path)
             word_handler.insert_hyper_links()
+            word_handler.insert_new_page()
             word_handler.save_word_document(output_path)
             print
         except IOError as e:

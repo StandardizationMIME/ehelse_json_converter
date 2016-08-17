@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from docx import *  #TODO: check if we can import less
+from docx import *
 from docx.shared import Inches
 from docx.oxml.shared import *
+from docx.enum.text import WD_BREAK
 from docxtpl import DocxTemplate
 
 
@@ -14,9 +15,6 @@ class WordHandler:
     UTF8 = 'utf8'
 
     word_document = None
-
-    # = None
-    content = {}
 
     def __init__(self, template_path=None):
         if template_path:
@@ -131,6 +129,10 @@ class WordHandler:
         self.word_document.add_paragraph(input_handler.get_contact_address_name_by_document_id(document_id))
 
     def insert_hyper_links(self):
+        """
+        Loops through the document an inserts links for [[url|text|website.com]] using python docx (docx).
+        :return:
+        """
         for paragraph in self.word_document.paragraphs:
             content = self.get_substring_between(paragraph.text, '[[', ']]')
             if len(content) > 0:
@@ -141,6 +143,23 @@ class WordHandler:
                     url = url_content_array[2]
                     paragraph.text = ''
                     self.__add_hyperlink(paragraph, url, text)
+
+    def insert_new_page(self):
+        """
+        Loops through the document an inserts page break for [[newpage]] using python docx (docx).
+        :return:
+        """
+        for paragraph in self.word_document.paragraphs:
+            content = self.get_substring_between(paragraph.text, '[[', ']]')
+            if len(content) > 0:
+                url_content_array  = content.split("||")
+                type = url_content_array[0]
+                if type == 'newpage':
+                    paragraph.text = ''
+                    paragraph.add_run().add_break(WD_BREAK.PAGE)
+
+
+
 
     def get_substring_between(self, string, first_substring, last_substring):
         """
@@ -160,8 +179,12 @@ class WordHandler:
 
 
     def save_word_document(self, file_path):
+       """
+        Saves Word document to disk
+       :param file_path: e.g. 'c:/document.docx'
+       :return:
+       """
        self.word_document.save(file_path)
-       # self.word_document.save("%s/%s.docx" % (file_path, file_name))
 
     # Sorce: https://github.com/python-openxml/python-docx/issues/74
     # Credit: https://github.com/rushton3179
