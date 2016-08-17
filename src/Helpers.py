@@ -26,3 +26,6 @@ class GuiContent:
     DROP_DOWN_VALUE_NO_SELECTED_TARGET_GROUP = 'Hele referansekatalogen'
 
 
+class TemplateElements:
+    NEW_PAGE = 'newpage'
+    URL = 'url'
