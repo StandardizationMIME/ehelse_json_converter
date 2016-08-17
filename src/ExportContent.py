@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class ExportContent:
 
     def __init__(self):
@@ -21,7 +22,7 @@ class ExportContent:
 
     def set_title(self, title):
         """
-        Set title on document. Currently not in template
+        Set title on document. Currently not in template!
         :param title:
         :return:
         """
@@ -98,7 +99,7 @@ class ExportContent:
                     if target_group_id == target_group['targetGroupId'] or input_handler.is_child_of(target_group_id, target_group['targetGroupId']):
                         include = True
                     target_groups.append({
-                        'name': input_handler.getTargetGroupById(target_group['targetGroupId'])['name'], # Name of target group
+                        'name': input_handler.get_target_group_by_id(target_group['targetGroupId'])['name'], # Name of target group
                         'deadline': target_group['deadline'],
                         'action': input_handler.get_action_name_by_id(target_group['actionId'])          # Name of action
                     })
@@ -154,9 +155,10 @@ class ExportContent:
                     'links': links
                 })
 
+            # If no target group is specified, add all documents
             if target_group_id == 0:
                 documents_object.append(document_object)
-            elif target_group_id > 0 and include:
+            elif target_group_id > 0 and include:   # TODO: Documents for target groups that are not supposed to be exportet should not be created - waste of resources.
                 documents_object.append(document_object)
 
         return documents_object
