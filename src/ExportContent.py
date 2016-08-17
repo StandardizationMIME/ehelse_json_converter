@@ -139,9 +139,10 @@ class ExportContent:
 
             # Link categories
             document_object['linksCategories'] = []
-            link_category_dict = input_handler.get_link_category_dict_by_document_id(document_id)
+            link_categories = input_handler.get_link_categories_by_document_id(document_id)
 
-            for link_category_id, link_category in link_category_dict.iteritems():  # Loop through all link categories of the document
+            for link_category in link_categories:  # Loop through all link categories of the document
+                link_category_id = link_category['id']
                 links = []
                 for link in input_handler.get_links_by_link_category_id_and_document_id(link_category_id,
                                                                                         document_id):  # for each link in current category
