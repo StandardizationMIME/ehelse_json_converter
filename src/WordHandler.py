@@ -5,6 +5,7 @@ from docx.shared import Inches
 from docx.oxml.shared import *
 from docx.enum.text import WD_BREAK
 from docxtpl import DocxTemplate
+from Helpers import *
 
 
 class WordHandler:
@@ -23,12 +24,15 @@ class WordHandler:
             self.word_document = Document()
 
     def add_heading(self, heading):
+        """NOT CURRENTLY IN USE"""
         self.word_document.add_heading(heading, level=self.HEADING_1)
 
     def add_topic(self, topic):
+        """NOT CURRENTLY IN USE"""
         self.word_document.add_heading(topic['title'], level=self.HEADING_2)
 
     def add_document(self, document, input_handler):
+        """NOT CURRENTLY IN USE"""
         document_id = document["id"]
         # Title
         self.word_document.add_heading(document['title'], level=self.HEADING_3)
@@ -81,7 +85,7 @@ class WordHandler:
                 else:
                     cells[0].text = ''
 
-                cells[1].text = input_handler.getTargetGroupById(target_group['targetGroupId'])['name']  # Name of target group
+                cells[1].text = input_handler.get_target_group_by_id(target_group['targetGroupId'])['name']  # Name of target group
                 cells[2].text = input_handler.get_action_name_by_id(target_group['actionId'])
 
                 row_number += 1
@@ -104,9 +108,6 @@ class WordHandler:
                 cells[0].paragraphs[0].add_run(text.decode(self.UTF8)).italic = True
                 cells[1].text = notice
 
-
-
-
         # Sections (headings)
         heading_dict = input_handler.get_heading_dict_by_document_id(document_id)
         for heading_id, heading in heading_dict.iteritems():
@@ -121,8 +122,8 @@ class WordHandler:
         for link_category_id, link_category in link_category_dict.iteritems():  # Loop through all link categories of the document
             self.word_document.add_heading(link_category['name'], level=self.HEADING_4)
             for link in input_handler.get_links_by_link_category_id_and_document_id(link_category_id, document_id): # for each link in current category
-                link_paragraph = self.word_document.add_paragraph(style='ListBullet') #TODO: deprecated, check if therese is a new way
-                self.__add_hyperlink(link_paragraph, link['url'], link['text'])   #TODO: Make sure url starts with http/https else, looking for file
+                link_paragraph = self.word_document.add_paragraph(style='ListBullet') #TODO: deprecated, check if therese is a new way to do this.
+                self.__add_hyperlink(link_paragraph, link['url'], link['text'])   #TODO: Make sure url starts with http/https else, looking for file on disk.
 
         # Contact address
         self.word_document.add_heading('Kontaktadresse', level=self.HEADING_4)
@@ -134,11 +135,11 @@ class WordHandler:
         :return:
         """
         for paragraph in self.word_document.paragraphs:
-            content = self.get_substring_between(paragraph.text, '[[', ']]')
+            content = self.__get_substring_between(paragraph.text, '[[', ']]')
             if len(content) > 0:
                 url_content_array = words = content.split("||")
                 type = url_content_array[0]
-                if type == 'url':
+                if type == TemplateElements.URL:
                     text = url_content_array[1]
                     url = url_content_array[2]
                     paragraph.text = ''
@@ -150,18 +151,15 @@ class WordHandler:
         :return:
         """
         for paragraph in self.word_document.paragraphs:
-            content = self.get_substring_between(paragraph.text, '[[', ']]')
+            content = self.__get_substring_between(paragraph.text, '[[', ']]')
             if len(content) > 0:
                 url_content_array  = content.split("||")
                 type = url_content_array[0]
-                if type == 'newpage':
+                if type == TemplateElements.NEW_PAGE:
                     paragraph.text = ''
                     paragraph.add_run().add_break(WD_BREAK.PAGE)
 
-
-
-
-    def get_substring_between(self, string, first_substring, last_substring):
+    def __get_substring_between(self, string, first_substring, last_substring):
         """
         Returns a a substring between two specified substring.
         E.g. get_substring_between('first second, third', 'first', 'third') => ' second '.
