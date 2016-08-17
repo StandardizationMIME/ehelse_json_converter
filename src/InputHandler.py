@@ -54,7 +54,7 @@ class InputHandler:
             if id == document['topicId']:
                 documents.append(document)
 
-        return documents
+        return self.__get_list_sorted_by_sequence(documents)
 
     def get_document_field_by_id(self, id):
         return deepcopy(self.document_fields_dict[id])
@@ -194,10 +194,8 @@ class InputHandler:
         """
         return self.json
 
-    def getTopics(self):
-        return self.json['topics'] # TODO: Check sort!
-        if (self.json):
-            return self.get_sorted_topics(self.json['topics'])
+    def get_topics(self):
+        return self.get_sorted_topics(self.json['topics'])
 
     def get_sorted_topics(self, topics):
         """

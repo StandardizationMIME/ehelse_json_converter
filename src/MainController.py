@@ -148,7 +148,7 @@ class MainController:
         :param input_path:
         :return:
         """
-        topics = self.input_handler.getTopics()
+        topics = self.input_handler.get_topics()
         for topic in topics:
             documents = self.input_handler.get_documents_by_topic_id(topic['id'])
             self.export_content.add_topic(topic, documents, self.input_handler, 0)
@@ -159,7 +159,7 @@ class MainController:
         :param target_group_id:
         :return:
         """
-        topics = self.input_handler.getTopics()
+        topics = self.input_handler.get_topics()
         for topic in topics:
             documents = self.input_handler.get_documents_by_topic_id(topic['id'])
             self.export_content.add_topic(topic, documents, self.input_handler, target_group_id)
