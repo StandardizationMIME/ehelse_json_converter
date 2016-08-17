@@ -65,11 +65,27 @@ class ExportContent:
             # Doucment content
             document_object['title'] = document['title']
             document_object['description'] = document['description']
-            document_object['status'] = input_handler.get_status_name_by_id(document['statusId'])
             document_object['contactAddress'] = input_handler.get_contact_address_name_by_document_id(document_id)
 
             # Fields
-            document_object['fields'] = input_handler.get_field_list_by_document_id(document_id)
+            fields = []
+
+            # -- Status
+            status = self.__get_field('Status', input_handler.get_status_name_by_id(document['statusId']))
+            if status:
+                fields.append(status)
+            # -- Internal ID
+
+            internal_id = self.__get_field('Intern ID', document['internalId'])
+            if internal_id:
+                fields.append(internal_id)
+            # -- HIS
+            his = self.__get_field('HIS-nummer', document['hisNumber'])
+            if his:
+                fields.append(his)
+
+            fields.extend(input_handler.get_field_list_by_document_id(document_id))
+            document_object['fields'] = fields
 
             # Target groups
             document_object['mandatoryList'] = []
@@ -83,22 +99,27 @@ class ExportContent:
                         include = True
                     target_groups.append({
                         'name': input_handler.getTargetGroupById(target_group['targetGroupId'])['name'], # Name of target group
+                        'deadline': target_group['deadline'],
                         'action': input_handler.get_action_name_by_id(target_group['actionId'])          # Name of action
                     })
                 # -- Add target group fields
                 targetGroupLegalBases = ''
-                if document['targetGroupLegalBases'] is not None:
-                    targetGroupLegalBases = document['targetGroupLegalBases']
                 decidedBy = ''
-                if document['decidedBy'] is not None:
-                    decidedBy = document['decidedBy']
                 replacedBy = ''
-                if document['replacedBy'] is not None:
-                    replacedBy = document['replacedBy']
                 notice = ''
+
+                if mandataory['id'] == '1':    # Only "obligatorisk" will have these fields
+                    if document['targetGroupLegalBases'] is not None:
+                        targetGroupLegalBases = document['targetGroupLegalBases']
+                    if document['decidedBy'] is not None:
+                        decidedBy = document['decidedBy']
+                    if document['replacedBy'] is not None:
+                        replacedBy = document['replacedBy']
+
                 for mandatory_notice in document['mandatoryNotices']:
                     if mandatory_notice['mandatoryId'] == mandataory_id:
                         notice = mandatory_notice['notice']
+
                 document_object['mandatoryList'].append({
                     'name': mandataory['name'],
                     'targetGroups': target_groups,
@@ -118,9 +139,10 @@ class ExportContent:
 
             # Link categories
             document_object['linksCategories'] = []
-            link_category_dict = input_handler.get_link_category_dict_by_document_id(document_id)
+            link_categories = input_handler.get_link_categories_by_document_id(document_id)
 
-            for link_category_id, link_category in link_category_dict.iteritems():  # Loop through all link categories of the document
+            for link_category in link_categories:  # Loop through all link categories of the document
+                link_category_id = link_category['id']
                 links = []
                 for link in input_handler.get_links_by_link_category_id_and_document_id(link_category_id,
                                                                                         document_id):  # for each link in current category
@@ -146,3 +168,17 @@ class ExportContent:
         """
         timestamp = str(datetime.now())
         return timestamp[:19]
+
+    def __get_field(self, name, value):
+        """
+        Returns field element on valid element.
+        :param name: e.g. 'HIS-nummer'
+        :param value: field from a document, e.g. document['his']
+        :return:
+        """
+        if value and len(value) > 0:
+            return {
+                'name': name,
+                'value': value
+            }
+        return None

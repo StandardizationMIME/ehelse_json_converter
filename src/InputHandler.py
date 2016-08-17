@@ -127,8 +127,32 @@ class InputHandler:
             link_category_id = link['linkCategoryId']
             if link_category_id not in link_categories_dict:
                 link_categories_dict[link_category_id] = self.getLinkCategoryById(link_category_id)
+        # NO sort of dictionaries?
+        return self.__get_list_sorted_by_property(link_categories_dict, 'sequence')
 
-        return link_categories_dict
+    def get_link_categories_by_document_id(self, id):
+
+        document = self.getDocumentById(id)
+        link_categories = []
+
+        for link in document['links']:
+            link_category_id = link['linkCategoryId']
+            if not self.id_is_in_list(link_category_id , link_categories):
+                link_categories.append(self.getLinkCategoryById(link_category_id))
+
+        return self.__get_list_sorted_by_property(link_categories, 'sequence')
+
+    def id_is_in_list(self, id, list):
+        """
+        Returns true if an element with the given id exists in list.
+        :param id:
+        :param list:
+        :return:
+        """
+        for element in list:
+            if element['id'] == id:
+                return True
+        return False
 
     def get_links_by_link_category_id_and_document_id(self, link_category_id, document_id):
         document = self.getDocumentById(document_id)
@@ -138,7 +162,8 @@ class InputHandler:
             if link['linkCategoryId'] == link_category_id:
                 links.append(link)
 
-        return links
+        return self.__get_list_sorted_by_property(links, 'sequence')
+
 
     def getMandatory(self):
         return self.json['mandatory']
@@ -257,8 +282,8 @@ class InputHandler:
     def __get_list_sorted_by_id(self, list):
         return sorted(list, key=lambda element: element['id'])
 
-    def __get_list_sorted_by_property(self, list, property):
-        return sorted(list, key=lambda element: element[property])
+    def __get_list_sorted_by_property(self, list, property_name):
+        return sorted(list, key=lambda element: element[property_name])
 
     def getTopicById(self, id):
         return self.__getElementById('topics', id)

@@ -1,8 +1,9 @@
 import tkFileDialog
-from src.logic.InputHandler import *
-from src.logic.ExportContent import *
-from src.logic.WordHandler import *
-from src.views.MainView import *
+
+from ExportContent import *
+from InputHandler import *
+from WordHandler import *
+from MainView import *
 
 
 class MainController:
@@ -186,6 +187,7 @@ class MainController:
             # Python-docx - replace links and save
             word_handler = WordHandler(output_path)
             word_handler.insert_hyper_links()
+            word_handler.insert_new_page()
             word_handler.save_word_document(output_path)
             print
         except IOError as e:
