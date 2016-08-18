@@ -11,11 +11,21 @@ class Messages:
     # Success messages
     SUCCESS_DOWNLOAD = 'Fil lastet ned.'
 
+
+
+class GuiContent:
+    WINDOW_SIZE = '500x300'
+    WINDOW_TITLE = 'Word-eksport'
+
     # Button values
     BUTTON_TEXT_OPEN_JSON = 'Åpne JSON-fil'
     BUTTON_TEXT_OPEN_WORD_TEMPLATE = 'Åpne Word-mal'
     BUTTON_TEXT_SAVE = 'Lagre Word-fil'
 
     # Drop down
-    DROP_DOWN_VALUE_NO_SELECTED_TARGET_GROUP = 'Hele referansekatalogen'
+    DROP_DOWN_VALUE_NO_SELECTED_TARGET_GROUP = 'Alle dokumenter'
 
+
+class TemplateElements:
+    NEW_PAGE = 'newpage'
+    URL = 'url'

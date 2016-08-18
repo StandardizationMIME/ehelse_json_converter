@@ -1,5 +1,4 @@
 import tkFileDialog
-
 from ExportContent import *
 from InputHandler import *
 from WordHandler import *
@@ -70,7 +69,7 @@ class MainController:
             try:
                 self.input_path = path
                 self.input_handler = InputHandler(self.input_path)
-                self.set_target_groups_drop_down_option()
+                self.__set_target_groups_drop_down_option()
                 self.main_view.set_input_path(self.input_path)
                 self.__check_downloadable()
             except ValueError as e:
@@ -107,7 +106,7 @@ class MainController:
                 print e
                 self.__set_error_message(Messages.ERROR_INVALID_INPUT_CONTENT)
 
-    def set_target_groups_drop_down_option(self):
+    def __set_target_groups_drop_down_option(self):
         """
         Updates target_groups_drop_down values from JSON file.
         The default value is not touched.
@@ -116,7 +115,7 @@ class MainController:
         options = self.main_view.target_groups_drop_down.children['menu']
         options.delete(1, 'end')  # Clear drop down
 
-        target_groups = self.input_handler.getTargetGroups()
+        target_groups = self.input_handler.get_target_groups()
 
         for target_group in target_groups:
             target_group_name = target_group['name']
@@ -145,17 +144,22 @@ class MainController:
 
     def __generate_word_document(self):
         """
-        Generates word document
+        Generates word document.
         :param input_path:
         :return:
         """
-        topics = self.input_handler.getTopics()
+        topics = self.input_handler.get_topics()
         for topic in topics:
             documents = self.input_handler.get_documents_by_topic_id(topic['id'])
             self.export_content.add_topic(topic, documents, self.input_handler, 0)
 
     def __generate_word_document_based_on_target_groups(self, target_group_id):
-        topics = self.input_handler.getTopics()
+        """
+        Generates Word document with the documents in which the specified target group appears.
+        :param target_group_id:
+        :return:
+        """
+        topics = self.input_handler.get_topics()
         for topic in topics:
             documents = self.input_handler.get_documents_by_topic_id(topic['id'])
             self.export_content.add_topic(topic, documents, self.input_handler, target_group_id)
@@ -173,23 +177,22 @@ class MainController:
         # Python-docx-template
         template = DocxTemplate(self.input_path_template)
 
-        self.export_content.reset_list()    # Reset list, to make sure it is not repeated on multiple downloads
-        if self.main_view.selected_target_group.get() == Messages.DROP_DOWN_VALUE_NO_SELECTED_TARGET_GROUP: # If no target group is selected
-            self.__generate_word_document()
+        self.export_content.reset_list()    # Reset list to make sure the content is not repeated on multiple downloads
+        if self.main_view.selected_target_group.get() == GuiContent.DROP_DOWN_VALUE_NO_SELECTED_TARGET_GROUP: # If no target group is selected
+            self.__generate_word_document() #   Word document is generated with all documents
         else:
-            target_group = self.input_handler.getTargetGroupById(self.target_groups_dict[self.main_view.selected_target_group.get()])
-            self.__generate_word_document_based_on_target_groups(target_group['id'])
+            target_group = self.input_handler.get_target_group_by_id(self.target_groups_dict[self.main_view.selected_target_group.get()])
+            self.__generate_word_document_based_on_target_groups(target_group['id'])    # Word document is generated with all documents that contains specified target group
         content = self.export_content.get_content()
-        template.render(content)
+        template.render(content)    # Insert values to jinja2 template
         try:
-            template.save(self.output_path)
+            template.save(self.output_path) # Temporary saved on disk
 
-            # Python-docx - replace links and save
+            # Python-docx - replace links and insert page breaks, before Word document is saved
             word_handler = WordHandler(output_path)
             word_handler.insert_hyper_links()
             word_handler.insert_new_page()
             word_handler.save_word_document(output_path)
-            print
         except IOError as e:
             self.__set_error_message(Messages.ERROR_CANT_WRITE_TO_FILE)
         except Exception as e:
