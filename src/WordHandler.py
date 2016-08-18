@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from docx import *  #TODO: check if we can import less
+from docx import *
 from docx.shared import Inches
 from docx.oxml.shared import *
-import os
-import sys
+from docx.enum.text import WD_BREAK
+from docxtpl import DocxTemplate
+from Helpers import *
+
 
 class WordHandler:
     HEADING_1 = 1
@@ -15,16 +17,22 @@ class WordHandler:
 
     word_document = None
 
-    def __init__(self):
-        self.word_document = Document()
+    def __init__(self, template_path=None):
+        if template_path:
+            self.word_document = DocxTemplate(template_path)
+        else:
+            self.word_document = Document()
 
     def add_heading(self, heading):
+        """NOT CURRENTLY IN USE"""
         self.word_document.add_heading(heading, level=self.HEADING_1)
 
     def add_topic(self, topic):
+        """NOT CURRENTLY IN USE"""
         self.word_document.add_heading(topic['title'], level=self.HEADING_2)
 
     def add_document(self, document, input_handler):
+        """NOT CURRENTLY IN USE"""
         document_id = document["id"]
         # Title
         self.word_document.add_heading(document['title'], level=self.HEADING_3)
@@ -77,16 +85,16 @@ class WordHandler:
                 else:
                     cells[0].text = ''
 
-                cells[1].text = input_handler.getTargetGroupById(target_group['targetGroupId'])['name']  # Name of target group
+                cells[1].text = input_handler.get_target_group_by_id(target_group['targetGroupId'])['name']  # Name of target group
                 cells[2].text = input_handler.get_action_name_by_id(target_group['actionId'])
 
                 row_number += 1
 
-            if input_handler.get_hjemmel_by_document_id(document_id) and mandataory_id == '1':
+            if input_handler.get_target_group_legal_bases_by_document_id(document_id) and mandataory_id == '1':
                 text = '• Hjemmel:'
                 cells = target_groups_table.add_row().cells
                 cells[0].paragraphs[0].add_run(text.decode(self.UTF8)).italic = True
-                cells[1].text = input_handler.get_hjemmel_by_document_id(document_id)
+                cells[1].text = input_handler.get_target_group_legal_bases_by_document_id(document_id)
             elif input_handler.get_decided_by_by_document_id(document_id) and mandataory_id == '1':
                 text = '• Erstattes av:'
                 cells = target_groups_table.add_row().cells
@@ -99,9 +107,6 @@ class WordHandler:
                 cells = target_groups_table.add_row().cells
                 cells[0].paragraphs[0].add_run(text.decode(self.UTF8)).italic = True
                 cells[1].text = notice
-
-
-
 
         # Sections (headings)
         heading_dict = input_handler.get_heading_dict_by_document_id(document_id)
@@ -117,19 +122,69 @@ class WordHandler:
         for link_category_id, link_category in link_category_dict.iteritems():  # Loop through all link categories of the document
             self.word_document.add_heading(link_category['name'], level=self.HEADING_4)
             for link in input_handler.get_links_by_link_category_id_and_document_id(link_category_id, document_id): # for each link in current category
-                link_paragraph = self.word_document.add_paragraph(style='ListBullet') #TODO: deprecated, check if therese is a new way
-                self.__add_hyperlink(link_paragraph, link['url'], link['text'])   #TODO: Make sure url starts with http/https else, looking for file
+                link_paragraph = self.word_document.add_paragraph(style='ListBullet') #TODO: deprecated, check if therese is a new way to do this.
+                self.__add_hyperlink(link_paragraph, link['url'], link['text'])   #TODO: Make sure url starts with http/https else, looking for file on disk.
 
         # Contact address
         self.word_document.add_heading('Kontaktadresse', level=self.HEADING_4)
         self.word_document.add_paragraph(input_handler.get_contact_address_name_by_document_id(document_id))
 
+    def insert_hyper_links(self):
+        """
+        Loops through the document an inserts links for [[url|text|website.com]] using python docx (docx).
+        :return:
+        """
+        for paragraph in self.word_document.paragraphs:
+            content = self.__get_substring_between(paragraph.text, '[[', ']]')
+            if len(content) > 0:
+                url_content_array = words = content.split("||")
+                type = url_content_array[0]
+                if type == TemplateElements.URL:
+                    text = url_content_array[1]
+                    url = url_content_array[2]
+                    paragraph.text = ''
+                    self.__add_hyperlink(paragraph, url, text)
+
+    def insert_new_page(self):
+        """
+        Loops through the document an inserts page break for [[newpage]] using python docx (docx).
+        :return:
+        """
+        for paragraph in self.word_document.paragraphs:
+            content = self.__get_substring_between(paragraph.text, '[[', ']]')
+            if len(content) > 0:
+                url_content_array  = content.split("||")
+                type = url_content_array[0]
+                if type == TemplateElements.NEW_PAGE:
+                    paragraph.text = ''
+                    paragraph.add_run().add_break(WD_BREAK.PAGE)
+
+    def __get_substring_between(self, string, first_substring, last_substring):
+        """
+        Returns a a substring between two specified substring.
+        E.g. get_substring_between('first second, third', 'first', 'third') => ' second '.
+        :param string: the string you want to return a substring from
+        :param first_substring:
+        :param last_substring:
+        :return:
+        """
+        try:
+            start = string.index(first_substring) + len(first_substring)
+            end = string.index(last_substring, start)
+            return string[start:end]
+        except Exception:
+            return ''
 
 
+    def save_word_document(self, file_path):
+       """
+        Saves Word document to disk
+       :param file_path: e.g. 'c:/document.docx'
+       :return:
+       """
+       self.word_document.save(file_path)
 
-    def save_word_document(self, file_path, file_name):
-        self.word_document.save("%s/%s.docx" % (file_path, file_name))
-
+    # Sorce: https://github.com/python-openxml/python-docx/issues/74
     # Credit: https://github.com/rushton3179
     def __add_hyperlink(self, paragraph, url, text):
         """

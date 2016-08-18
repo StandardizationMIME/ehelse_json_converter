@@ -1,2 +1,6 @@
 .idea/
+.src/dist/
+.src/build/
 *.pyc
+templates/~$mplate.docx
+templates/~WRL2792.tmp
