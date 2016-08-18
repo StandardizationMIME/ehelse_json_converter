@@ -14,7 +14,7 @@ class Messages:
 
 
 class GuiContent:
-    WINDOW_SIZE = '380x200'
+    WINDOW_SIZE = '500x300'
     WINDOW_TITLE = 'Word-eksport'
 
     # Button values
@@ -23,7 +23,7 @@ class GuiContent:
     BUTTON_TEXT_SAVE = 'Lagre Word-fil'
 
     # Drop down
-    DROP_DOWN_VALUE_NO_SELECTED_TARGET_GROUP = 'Hele referansekatalogen'
+    DROP_DOWN_VALUE_NO_SELECTED_TARGET_GROUP = 'Alle dokumenter'
 
 
 class TemplateElements:
