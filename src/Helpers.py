@@ -9,7 +9,7 @@ class Messages:
     ERROR_CANT_WRITE_TO_FILE = 'Kan ikke skrive til fil. Sørg for at filen ikke er åpen i andre programmer.s'
     ERROR_DEFAULT = 'Noe gikk galt, vennligst restart og prøv igjen.'
     # Success messages
-    SUCCESS_DOWNLOAD = 'Fil lastet ned.'
+    SUCCESS_DOWNLOAD = 'Fil lagret.'
 
 
 
